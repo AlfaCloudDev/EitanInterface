@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class CreateOutboundDeliveryController {
 
     private final String oDataServiceUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection";
+    private final String oDataItemUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationItemCollection";
     private final String oDataSerialUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationSerialCollection";
     private final Logger logger = LoggerFactory.getLogger(CreateOutboundDeliveryController.class);
 
@@ -57,40 +58,56 @@ public class CreateOutboundDeliveryController {
                 JsonNode rootNode = objectMapper.readTree(jsonContent);
 
                 String reference = safeGetAsText(rootNode, "Reference").substring(3);
-               
                 String shipFromSite = safeGetAsText(rootNode, "ShipFromSite");
+
+                String postBody = String.format("{\"SalesOrderID\":\"%s\", \"ShipFromSite\":\"%s\"}", reference, shipFromSite);
+                String response = sendPostRequest(postBody);
+                String salesOrderObjectID ="";
+                if (response.contains("ObjectID")) {
+                    logger.info("salesOrderObjectID exists");
+                    salesOrderObjectID = extractObjectID(response);
+                    logger.info("salesOrderObjectID: " + salesOrderObjectID);
+                }else{
+                    logger.info("ObjectID not found");
+                }
+                responses.add(response);
+
+                //ITEMS
 
                 JsonNode items = rootNode.path("Item");
                 for (JsonNode item : items) {
                     String productID = safeGetAsText(item, "ProductID");
                     String losgisticsAreaID = safeGetAsText(item, "lotCode");
-                    //String quantity = safeGetAsText(item, "Quantity");
                     JsonNode serialNumbers = item.path("SerialNumbers");
+                    String actualQuantity = safeGetAsText(item, "Quantity");
+                    String lineItem = safeGetAsText(item, "LineItem");
+                    // int serialCount = 0;
+                    // for (JsonNode serialNode : serialNumbers) {
+                    //     if (serialNode.has("SerialNumber") && !serialNode.get("SerialNumber").isNull()) {
+                    //         serialCount++;
+                    //     }
+                    // }
 
-                    int serialCount = 0;
-                    for (JsonNode serialNode : serialNumbers) {
-                        if (serialNode.has("SerialNumber") && !serialNode.get("SerialNumber").isNull()) {
-                            serialCount++;
-                        }
-                    }
+                    String postItemBody = String.format("{\"ParentObjectID\":\"%s\",\"ProductID\":\"%s\", \"LogisticsAreaID\":\"%s\" , \"ActualQuantity\":\"%s\" , \"LineItem\":\"%s\"}",salesOrderObjectID, productID, losgisticsAreaID, actualQuantity, lineItem);
+                    String itemResponse = sendItemPostRequest(postItemBody);
+                    responses.add(itemResponse);
 
-                    String postBody = String.format("{\"SalesOrderID\":\"%s\", \"ShipFromSite\":\"%s\", \"ProductID\":\"%s\", \"ActualQuantity\":\"%s\", \"LogisticsAreaID\":\"%s\"}", reference, shipFromSite, productID, serialCount, losgisticsAreaID);
-                    String response = sendPostRequest(postBody);
-                    responses.add(response);
-
-                    logger.info("Response for POST request: " + response);
-
-                    if (response.contains("ObjectID")) {
-                        logger.info("ObjectId exists");
-                        String objectID = extractObjectID(response);
-                        logger.info("ObjectId: " + objectID);
+                    logger.info("Response for Item POST request: " + itemResponse);
+                        
+                    if (itemResponse.contains("ObjectID")) {
+                        logger.info("Item ObjectId exists");
+                        String itemObjectID = extractObjectID(itemResponse);
+                        logger.info("Item ObjectId: " + itemObjectID);
+                        
+                        //SERIALS
 
                         for (JsonNode serialNode : serialNumbers) {
                             String serialID = safeGetAsText(serialNode, "SerialNumber");
 
                             if (serialID != null) {
-                                String serialPostBody = String.format("{\"ParentObjectID\":\"%s\", \"SerialID\":\"%s\"}", objectID, serialID);
-                                sendSerialPostRequest(serialPostBody);
+                                String serialPostBody = String.format("{\"ParentObjectID\":\"%s\", \"SerialID\":\"%s\"}", itemObjectID, serialID);
+                                String responseSerial = sendSerialPostRequest(serialPostBody);
+                                responses.add(responseSerial);
                                 logger.info("Sent POST request for serial number: " + serialID);
                             } else {
                                 logger.info("Serial number missing or null in the serialNode: " + serialNode);
@@ -111,7 +128,7 @@ public class CreateOutboundDeliveryController {
                 logger.error("Error while disconnecting FTP: " + e.getMessage(), e);
             }
         }
-        return responses.toString() + "test";
+        return responses.toString();
     }
 
     private String sendPostRequest(String postBody) {
@@ -131,7 +148,7 @@ public class CreateOutboundDeliveryController {
         }
     }
 
-    private void sendSerialPostRequest(String postBody) {
+    private String sendItemPostRequest(String postBody) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -140,9 +157,30 @@ public class CreateOutboundDeliveryController {
         HttpEntity<String> request = new HttpEntity<>(postBody, headers);
 
         try {
-            restTemplate.postForEntity(oDataSerialUri, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(oDataItemUri, request, String.class);
+            return response.getStatusCode() + " - " + response.getBody();
+            
         } catch (Exception e) {
-            logger.error("Error while sending POST request for serial number: " + e.getMessage(), e);
+            logger.error("Failed to send Item POST request: " + e.getMessage(), e);
+            return "Failed to send Item POST request: " + e.getMessage();
+        }
+    }
+
+    private String sendSerialPostRequest(String postBody) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Basic X29kYXRhOldlbGNvbWUxMjM=");
+
+        HttpEntity<String> request = new HttpEntity<>(postBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(oDataSerialUri, request, String.class);
+            return response.getStatusCode() + " - " + response.getBody();
+            
+        } catch (Exception e) {
+            logger.error("Failed to send serial POST request: " + e.getMessage(), e);
+            return "Failed to send serial POST request: " + e.getMessage();
         }
     }
 
@@ -151,20 +189,20 @@ public class CreateOutboundDeliveryController {
             String objectIDKey = "\"ObjectID\":\"";
             int startIndex = response.indexOf(objectIDKey);
             if (startIndex == -1) {
-                System.out.println("ObjectID key not found in response");
+                logger.error("ObjectID key not found in response");
                 return null;
             }
    
             startIndex += objectIDKey.length();
             int endIndex = response.indexOf("\"", startIndex);
             if (endIndex == -1) {
-                System.out.println("End of ObjectID value not found in response");
+                logger.error("End of ObjectID value not found in response");
                 return null;
             }
    
             return response.substring(startIndex, endIndex);
         } catch (Exception e) {
-            System.out.println("Error while extracting ObjectID: " + e.getMessage());
+            logger.error("Error while extracting ObjectID: " + e.getMessage());
             return null;
         }
     }
