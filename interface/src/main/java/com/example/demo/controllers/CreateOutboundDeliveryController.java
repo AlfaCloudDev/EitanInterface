@@ -160,7 +160,7 @@ public class CreateOutboundDeliveryController {
         HttpEntity<String> request = new HttpEntity<>(postBody, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(oDataItemUri, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(oDataServiceUri, request, String.class);
             return response.getStatusCode() + " - " + response.getBody();
             
         } catch (Exception e) {
