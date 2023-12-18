@@ -74,7 +74,10 @@ public class CreateOutboundDeliveryController {
                 JsonNode items = rootNode.path("Item");
                 for (JsonNode item : items) {
 
-                    String reference = safeGetAsText(rootNode, "Reference").substring(3);
+                    String reference = safeGetAsText(rootNode, "Reference");
+                    if(reference.contains("EMU")){
+                        reference = reference.substring(3);
+                    }
                     String shipFromSite = safeGetAsText(rootNode, "ShipFromSite");
                     String productID = safeGetAsText(item, "ProductID");
                     String losgisticsAreaID = safeGetAsText(item, "lotCode");
