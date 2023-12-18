@@ -44,7 +44,7 @@ public class CreateOutboundDeliveryController {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
-            ftpClient.changeWorkingDirectory("/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote");
+            ftpClient.changeWorkingDirectory("/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input");
 
             FTPFile[] files = ftpClient.listFiles();
 
