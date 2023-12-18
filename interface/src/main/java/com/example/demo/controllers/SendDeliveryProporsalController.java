@@ -1,7 +1,10 @@
 package com.example.demo.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +28,7 @@ public class SendDeliveryProporsalController {
    @PostMapping(path = "/SendDeliveryProporsal", 
                produces = MediaType.APPLICATION_JSON_VALUE,
                consumes = MediaType.APPLICATION_JSON_VALUE)
-   public String createDeliveryProporsal(@RequestBody OutgoingDeliveryProposal outgoingDeliveryProposal) {
+   public ResponseEntity<Map<String, Object>> createDeliveryProporsal(@RequestBody OutgoingDeliveryProposal outgoingDeliveryProposal) {
 		System.out.println(outgoingDeliveryProposal);
 		//return outgoingDeliveryProposal.toString();
 		return this.outgoingDeliveryProposalInterface.CreateAndUploadDeliveryProposal(outgoingDeliveryProposal);
