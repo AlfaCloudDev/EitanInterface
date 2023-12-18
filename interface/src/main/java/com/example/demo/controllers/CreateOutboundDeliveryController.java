@@ -57,25 +57,25 @@ public class CreateOutboundDeliveryController {
                 String jsonContent = IOUtils.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 JsonNode rootNode = objectMapper.readTree(jsonContent);
 
-                String reference = safeGetAsText(rootNode, "Reference").substring(3);
-                String shipFromSite = safeGetAsText(rootNode, "ShipFromSite");
-
-                String postBody = String.format("{\"SalesOrderID\":\"%s\", \"ShipFromSite\":\"%s\"}", reference, shipFromSite);
-                String response = sendPostRequest(postBody);
-                String salesOrderObjectID ="";
-                if (response.contains("ObjectID")) {
-                    logger.info("salesOrderObjectID exists");
-                    salesOrderObjectID = extractObjectID(response);
-                    logger.info("salesOrderObjectID: " + salesOrderObjectID);
-                }else{
-                    logger.info("ObjectID not found");
-                }
-                responses.add(response);
+                // String postBody = String.format("{\"SalesOrderID\":\"%s\", \"ShipFromSite\":\"%s\"}", reference, shipFromSite);
+                // String response = sendPostRequest(postBody);
+                // String salesOrderObjectID ="";
+                // if (response.contains("ObjectID")) {
+                //     logger.info("salesOrderObjectID exists");
+                //     salesOrderObjectID = extractObjectID(response);
+                //     logger.info("salesOrderObjectID: " + salesOrderObjectID);
+                // }else{
+                //     logger.info("ObjectID not found");
+                // }
+                // responses.add(response);
 
                 //ITEMS
 
                 JsonNode items = rootNode.path("Item");
                 for (JsonNode item : items) {
+
+                    String reference = safeGetAsText(rootNode, "Reference").substring(3);
+                    String shipFromSite = safeGetAsText(rootNode, "ShipFromSite");
                     String productID = safeGetAsText(item, "ProductID");
                     String losgisticsAreaID = safeGetAsText(item, "lotCode");
                     JsonNode serialNumbers = item.path("SerialNumbers");
@@ -88,7 +88,7 @@ public class CreateOutboundDeliveryController {
                     //     }
                     // }
 
-                    String postItemBody = String.format("{\"ParentObjectID\":\"%s\",\"ProductID\":\"%s\", \"LogisticsAreaID\":\"%s\" , \"ActualQuantity\":\"%s\" , \"LineItem\":\"%s\"}",salesOrderObjectID, productID, losgisticsAreaID, actualQuantity, lineItem);
+                    String postItemBody = String.format("{\"SalesOrderID\":\"%s\",\"ProductID\":\"%s\", \"LogisticsAreaID\":\"%s\" , \"ActualQuantity\":\"%s\" , \"LineItem\":\"%s\",\"ShipFromSite\":\"%s\"}",reference ,productID, losgisticsAreaID, actualQuantity, lineItem, shipFromSite);
                     String itemResponse = sendItemPostRequest(postItemBody);
                     responses.add(itemResponse);
 
