@@ -40,7 +40,7 @@ public class GoodsReceiptProposalService implements GoodsReceiptProposalInterfac
         // Convert the object to JSON
         
         
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/GoodsReceiptProposal/";
+        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/GoodsReceiptProposal/Input/";
 
         FTPClient ftpClient = new FTPClient();
 
