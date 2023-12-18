@@ -11,7 +11,7 @@ import com.example.demo.logic.OutgoingDeliveryProposalInterface;
 
 
 @RestController
-public class SendDocumentsController {
+public class SendDeliveryProporsalController {
 
 	private OutgoingDeliveryProposalInterface outgoingDeliveryProposalInterface;
 	//private final ObjectMapper objectMapper = new ObjectMapper();
