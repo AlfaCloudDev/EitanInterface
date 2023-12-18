@@ -31,11 +31,5 @@ public class SendDocumentsController {
 		return this.outgoingDeliveryProposalInterface.CreateAndUploadDeliveryProposal(outgoingDeliveryProposal);
     	
    }
-
-   /*@GetMapping(path = "", 
-               produces = MediaType.APPLICATION_JSON_VALUE)
-   public String hello() {
-		return "hello dean";
-   }*/
    
 }
