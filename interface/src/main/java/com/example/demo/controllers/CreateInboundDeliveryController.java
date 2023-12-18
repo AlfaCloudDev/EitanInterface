@@ -61,7 +61,7 @@ public class CreateInboundDeliveryController {
             throw new IOException("FTP login failed for user " + user);
         }
         ftpClient.enterLocalPassiveMode();
-        ftpClient.changeWorkingDirectory("/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/GoodsReceipt");
+        ftpClient.changeWorkingDirectory("/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/GoodsReceipt/Input");
     }
 
     // Method to read the content of a file from FTP server
