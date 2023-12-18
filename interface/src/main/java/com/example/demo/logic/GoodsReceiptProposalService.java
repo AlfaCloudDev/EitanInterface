@@ -14,12 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.boundries.OutgoingDeliveryProposal;
+import com.example.demo.boundries.GoodsReceiptProposal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @Service
-public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposalInterface{
+public class GoodsReceiptProposalService implements GoodsReceiptProposalInterface{
 
     private ObjectMapper jackson;
 
@@ -29,11 +28,7 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> CreateAndUploadDeliveryProposal(OutgoingDeliveryProposal outgoingDeliveryProposal) {
-        //Dotenv dotenv = Dotenv.configure().directory("/home/user/projects/interface/interface/").load();
-		//String server = dotenv.get("SERVER");
-        //String user = dotenv.get("USER");
-        //String password = dotenv.get("PASSWORD");
+    public ResponseEntity<Map<String, Object>> CreateAndUploadGoodsReceiptProposal(GoodsReceiptProposal goodsReceiptProposal) {
         String server = "ftp.drivehq.com";
         String user = "rhcleitan";
         String password = "rhcl1234";
@@ -45,12 +40,12 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
         // Convert the object to JSON
         
         
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/";
+        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/GoodsReceiptProposal/";
 
         FTPClient ftpClient = new FTPClient();
 
 	    try {
-            String json = jackson.writeValueAsString(outgoingDeliveryProposal);
+            String json = jackson.writeValueAsString(goodsReceiptProposal);
             InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 			ftpClient.connect(server, port);
 			ftpClient.login(user, password);
@@ -58,7 +53,7 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
             ftpClient.enterLocalPassiveMode();
 	
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			String remoteFile = path + "OutputDeliveryProposal" + outgoingDeliveryProposal.getReference() + ".json";
+			String remoteFile = path + "GoodsReceiptProposal" + goodsReceiptProposal.getId() + ".json";
 	
 			boolean success = ftpClient.storeFile(remoteFile, inputStream);
             if (success) {
@@ -77,11 +72,8 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
 				e.printStackTrace();
 			}
 		}
-        
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("Message", returnValue);
         return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
-
     }
-    
 }
