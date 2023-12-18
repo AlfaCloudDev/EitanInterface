@@ -29,7 +29,6 @@ public class SendDocumentsController {
 		System.out.println(outgoingDeliveryProposal);
 		//return outgoingDeliveryProposal.toString();
 		return this.outgoingDeliveryProposalInterface.CreateAndUploadDeliveryProposal(outgoingDeliveryProposal);
-    	
    }
    
 }
