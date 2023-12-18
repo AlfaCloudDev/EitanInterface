@@ -45,7 +45,7 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
         // Convert the object to JSON
         
         
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/";
+        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/Input/";
 
         FTPClient ftpClient = new FTPClient();
 
