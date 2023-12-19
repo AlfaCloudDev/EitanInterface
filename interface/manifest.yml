@@ -2,7 +2,7 @@
 applications:
 - name: eitaninterface
   random-route: true
-  path: /home/user/projects/interface/interface/target/interface-0.0.1-SNAPSHOT.jar
+  path: /home/user/projects/EitanInterface/interface/target/interface-0.0.1-SNAPSHOT.jar
   memory: 1024M
   buildpacks: 
   - sap_java_buildpack
