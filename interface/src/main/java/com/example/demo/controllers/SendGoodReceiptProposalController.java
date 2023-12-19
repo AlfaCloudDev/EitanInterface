@@ -30,7 +30,7 @@ public class SendGoodReceiptProposalController {
                produces = MediaType.APPLICATION_JSON_VALUE,
                consumes = MediaType.APPLICATION_JSON_VALUE)
    public ResponseEntity<Map<String, Object>> createGoodsReceiptProposal(@RequestBody GoodsReceiptProposal goodsReceiptProposal) {
-        return this.goodsReceiptProposalInterface.CreateAndUploadGoodsReceiptProposal(goodsReceiptProposal);
+      return this.goodsReceiptProposalInterface.CreateAndUploadGoodsReceiptProposal(goodsReceiptProposal);
    }
    
 }
