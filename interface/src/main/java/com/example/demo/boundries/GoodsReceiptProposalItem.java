@@ -40,7 +40,7 @@ public class GoodsReceiptProposalItem {
     private String shipFromAddressCountry;
     @JsonProperty("ShipToID")
     private String shipToID;
-    @JsonProperty("AdvisedInboundDelivreyNotification")
+    @JsonProperty("AdvisedInboundDeliveryNotification")
     private String advisedInboundDeliveryNotification;
 
 
@@ -181,19 +181,6 @@ public class GoodsReceiptProposalItem {
     }
 
 
-
-    public String getAdvisedInboundDeliveyNotification() {
-        return advisedInboundDeliveryNotification;
-    }
-
-
-
-    public void setAdvisedInboundDeliveyNotification(String advisedInboundDeliveryNotification) {
-        this.advisedInboundDeliveryNotification = advisedInboundDeliveryNotification;
-    }
-
-
-
     public String getShipFromAccountID() {
         return shipFromAccountID;
     }
@@ -278,6 +265,18 @@ public class GoodsReceiptProposalItem {
 
 
 
+    public String getAdvisedInboundDeliveryNotification() {
+        return advisedInboundDeliveryNotification;
+    }
+
+
+
+    public void setAdvisedInboundDeliveryNotification(String advisedInboundDeliveryNotification) {
+        this.advisedInboundDeliveryNotification = advisedInboundDeliveryNotification;
+    }
+
+
+
     @Override
     public String toString() {
         return "GoodsReceiptProposalItem [lineItemID=" + lineItemID + ", productId=" + productId
@@ -285,12 +284,16 @@ public class GoodsReceiptProposalItem {
                 + openPurchaseOrderQuantity + ", openPurchaseOrderQuantityUOM=" + openPurchaseOrderQuantityUOM
                 + ", purchaseOrderDeliveryDate=" + purchaseOrderDeliveryDate + ", deliverySchedule=" + deliverySchedule
                 + ", advised=" + advised + ", deliveryCompleted=" + deliveryCompleted + ", canceled=" + canceled
-                + ", ShipFromAccountID=" + shipFromAccountID + ", ShipFromAccountName=" + shipFromAccountName
-                + ", ShipFromAddressStreet=" + shipFromAddressStreet + ", ShipFromAddressCity=" + shipFromAddressCity
-                + ", ShipFromAddressState=" + shipFromAddressState + ", ShipFromAddressZip=" + shipFromAddressZip
-                + ", ShipFromAddressCountry=" + shipFromAddressCountry + ", shipToID=" + shipToID
-                + ", advisedInboundDeliveyNotification=" + advisedInboundDeliveryNotification + "]";
+                + ", shipFromAccountID=" + shipFromAccountID + ", shipFromAccountName=" + shipFromAccountName
+                + ", shipFromAddressStreet=" + shipFromAddressStreet + ", shipFromAddressCity=" + shipFromAddressCity
+                + ", shipFromAddressState=" + shipFromAddressState + ", shipFromAddressZip=" + shipFromAddressZip
+                + ", shipFromAddressCountry=" + shipFromAddressCountry + ", shipToID=" + shipToID
+                + ", advisedInboundDeliveryNotification=" + advisedInboundDeliveryNotification + "]";
     }
+
+    
+
+
 
     
 
