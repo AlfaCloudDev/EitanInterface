@@ -26,7 +26,6 @@ import java.util.ArrayList;
 public class CreateOutboundDeliveryController {
 
     private final String oDataServiceUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection";
-    //private final String oDataItemUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationItemCollection";
     private final String oDataSerialUri = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationSerialCollection";
     private final Logger logger = LoggerFactory.getLogger(CreateOutboundDeliveryController.class);
 
@@ -56,18 +55,6 @@ public class CreateOutboundDeliveryController {
                 InputStream inputStream = ftpClient.retrieveFileStream(file.getName());
                 String jsonContent = IOUtils.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 JsonNode rootNode = objectMapper.readTree(jsonContent);
-
-                // String postBody = String.format("{\"SalesOrderID\":\"%s\", \"ShipFromSite\":\"%s\"}", reference, shipFromSite);
-                // String response = sendPostRequest(postBody);
-                // String salesOrderObjectID ="";
-                // if (response.contains("ObjectID")) {
-                //     logger.info("salesOrderObjectID exists");
-                //     salesOrderObjectID = extractObjectID(response);
-                //     logger.info("salesOrderObjectID: " + salesOrderObjectID);
-                // }else{
-                //     logger.info("ObjectID not found");
-                // }
-                // responses.add(response);
 
                 //ITEMS
 
@@ -133,23 +120,6 @@ public class CreateOutboundDeliveryController {
         }
         return responses.toString();
     }
-
-    // private String sendPostRequest(String postBody) {
-    //     RestTemplate restTemplate = new RestTemplate();
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.setContentType(MediaType.APPLICATION_JSON);
-    //     headers.set("Authorization", "Basic X29kYXRhOldlbGNvbWUxMjM=");
-
-    //     HttpEntity<String> request = new HttpEntity<>(postBody, headers);
-
-    //     try {
-    //         ResponseEntity<String> response = restTemplate.postForEntity(oDataServiceUri, request, String.class);
-    //         return response.getStatusCode() + " - " + response.getBody();
-    //     } catch (Exception e) {
-    //         logger.error("Failed to send POST request: " + e.getMessage(), e);
-    //         return "Failed to send POST request: " + e.getMessage();
-    //     }
-    // }
 
     private String sendItemPostRequest(String postBody) {
         RestTemplate restTemplate = new RestTemplate();
