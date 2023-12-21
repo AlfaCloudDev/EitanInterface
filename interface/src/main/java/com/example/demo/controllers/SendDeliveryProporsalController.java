@@ -29,8 +29,6 @@ public class SendDeliveryProporsalController {
                produces = MediaType.APPLICATION_JSON_VALUE,
                consumes = MediaType.APPLICATION_JSON_VALUE)
    public ResponseEntity<Map<String, Object>> createDeliveryProporsal(@RequestBody OutgoingDeliveryProposal outgoingDeliveryProposal) {
-		System.out.println(outgoingDeliveryProposal);
-		//return outgoingDeliveryProposal.toString();
 		return this.outgoingDeliveryProposalInterface.CreateAndUploadDeliveryProposal(outgoingDeliveryProposal);
    }
    
