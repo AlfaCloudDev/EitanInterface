@@ -44,14 +44,15 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
 		
         // Convert the object to JSON
         
-        String appName = Helper.getAppName();
+        /*String appName = Helper.getAppName();
         String path = "";
         if (appName.equals("eitaninterface")){
             path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/Input/";
         }
         else if (appName.equals("eitaninterfaceProd")) {
             path = "drivehqshare/rgwoodfield/Eitan_SAP/Prod/IN/DeliveryProposal/Input/";
-        }
+        }*/
+        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/Input/";
         FTPClient ftpClient = new FTPClient();
 
 	    try {
