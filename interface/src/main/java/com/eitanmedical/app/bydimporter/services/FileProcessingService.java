@@ -5,6 +5,7 @@ import com.eitanmedical.app.bydimporter.boundries.OutboundDeliveryCreationDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +24,18 @@ public class FileProcessingService implements FileProcessingInterface {
 
     private final ObjectMapper objectMapper;
 
-    private final String ftpServer = "ftp.drivehq.com";
-    private final String ftpUser = "rhcleitan";
-    private final String ftpPassword = "rhcl1234";
-    private final int ftpPort = 21;
+    @Value("${EITAN_INTERFACE_FTP_PASSWORD:default_value}")
+    private String ftpPassword;
+    @Value("${EITAN_INTERFACE_FTP_USERNAME:default_value}")
+    private String ftpUser;
+    @Value("${EITAN_INTERFACE_FTP_SERVER:default_value}")
+    private String ftpServer;
+    @Value("${EITAN_INTERFACE_FTP_PORT:0}")
+    private int ftpPort;
+
     private final String ftpDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";
     private final String errorDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Error";
+
 
     public FileProcessingService() {
         this.objectMapper = new ObjectMapper();
