@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposalInterface{
 
+    @Value("${EITAN_INTERFACE_FTP_PASSWORD:default_value}")
+    private String ftpPassword;
+    @Value("${EITAN_INTERFACE_FTP_USERNAME:default_value}")
+    private String ftpUser;
+    @Value("${EITAN_INTERFACE_FTP_SERVER:default_value}")
+    private String ftpServer;
+    @Value("${EITAN_INTERFACE_FTP_PORT:0}")
+    private int ftpPort;
+    
     private ObjectMapper jackson;
 
     @PostConstruct
@@ -34,11 +44,7 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
 		//String server = dotenv.get("SERVER");
         //String user = dotenv.get("USER");
         //String password = dotenv.get("PASSWORD");
-        String server = "ftp.drivehq.com";
-        String user = "rhcleitan";
-        String password = "rhcl1234";
 
-        int port = 21;
         
         String returnValue = "";
 		
@@ -58,8 +64,8 @@ public class OutgoingDeliveryProposalService implements OutgoingDeliveryProposal
 	    try {
             String json = jackson.writeValueAsString(outgoingDeliveryProposal);
             InputStream inputStream = new ByteArrayInputStream(json.getBytes());
-			ftpClient.connect(server, port);
-			ftpClient.login(user, password);
+			ftpClient.connect(ftpServer, ftpPort);
+			ftpClient.login(ftpUser, ftpPassword);
 
             ftpClient.enterLocalPassiveMode();
 	
