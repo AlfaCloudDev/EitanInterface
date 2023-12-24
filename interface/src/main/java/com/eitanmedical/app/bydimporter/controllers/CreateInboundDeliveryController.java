@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.json.JSONObject;
@@ -23,7 +24,7 @@ public class CreateInboundDeliveryController {
     private static final Logger logger = LoggerFactory.getLogger(CreateInboundDeliveryController.class);
 
     @GetMapping(path = "/CreateInboundDelivery", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String createInboundDelivery() {
+    public String createInboundDelivery(Authentication authentication) {
         FTPClient ftpClient = new FTPClient();
         StringBuilder allResults = new StringBuilder();
 

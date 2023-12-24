@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class SendDeliveryProporsalController {
    @PostMapping(path = "/SendDeliveryProporsal", 
                produces = MediaType.APPLICATION_JSON_VALUE,
                consumes = MediaType.APPLICATION_JSON_VALUE)
-   public ResponseEntity<Map<String, Object>> createDeliveryProporsal(@RequestBody OutgoingDeliveryProposal outgoingDeliveryProposal) {
+   public ResponseEntity<Map<String, Object>> createDeliveryProporsal(Authentication authentication, @RequestBody OutgoingDeliveryProposal outgoingDeliveryProposal) {
 		return this.outgoingDeliveryProposalInterface.CreateAndUploadDeliveryProposal(outgoingDeliveryProposal);
    }
    
