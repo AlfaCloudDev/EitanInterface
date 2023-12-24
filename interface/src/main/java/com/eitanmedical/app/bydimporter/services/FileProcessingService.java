@@ -45,14 +45,14 @@ public class FileProcessingService implements FileProcessingInterface {
     @Override
     public String processAllFilesAndSendToByD() throws IOException {
         List<String> byDResponses = new ArrayList<>();
-        List<FTPReadService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath);
+        List<FTPReadService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath,errorDirectoryPath);
 
         for (FTPReadService.FileContent fileContent : fileContents) {
             FTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), FTPFileDto.class);
 
             if (!FileValidationService.isValidFile(ftpFileDto)) {
                 // Move file to error directory if validation fails
-                ftpReadService.moveToErrorDirectory(ftpServer, ftpUser, ftpPassword, ftpPort, fileContent.getFilePath(), errorDirectoryPath);
+                //ftpReadService.moveToErrorDirectory(ftpServer, ftpUser, ftpPassword, ftpPort, fileContent.getFilePath(), errorDirectoryPath);
                 continue;
             }
 
@@ -86,5 +86,11 @@ public class FileProcessingService implements FileProcessingInterface {
         }
 
         return String.join("\n", byDResponses);
+    }
+
+    @Override
+    public void finalizeFileProcessing(String fileName) throws IOException {
+        String filePath = errorDirectoryPath + "/" + fileName;
+        ftpReadService.deleteFile(ftpServer, ftpUser, ftpPassword, ftpPort, filePath);
     }
 }

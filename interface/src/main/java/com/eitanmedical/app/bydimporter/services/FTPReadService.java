@@ -31,27 +31,35 @@ public class FTPReadService {
         }
     }
 
-    public List<FileContent> readAllFiles(String server, String user, String password, int port, String directoryPath) throws IOException {
+    public List<FileContent> readAllFiles(String server, String user, String password, int port, String directoryPath, String errorDirectoryPath) throws IOException {
         FTPClient ftpClient = new FTPClient();
         List<FileContent> fileContents = new ArrayList<>();
-
+    
         try {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
             ftpClient.changeWorkingDirectory(directoryPath);
-
-            FTPFile[] files = ftpClient.listFiles(directoryPath);
+    
+            FTPFile[] files = ftpClient.listFiles();
             for (FTPFile file : files) {
                 if (!file.isFile()) {
                     continue;
                 }
-
-                String filePath = directoryPath + "/" + file.getName();
-                InputStream inputStream = ftpClient.retrieveFileStream(filePath);
+    
+                String originalFilePath = directoryPath + "/" + file.getName();
+                String errorFilePath = errorDirectoryPath + "/" + file.getName();
+    
+                // Move the file to the error directory
+                if (!ftpClient.rename(originalFilePath, errorFilePath)) {
+                    throw new IOException("Failed to move file: " + file.getName());
+                }
+    
+                // Read the file from the error directory
+                InputStream inputStream = ftpClient.retrieveFileStream(errorFilePath);
                 String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-                fileContents.add(new FileContent(content, filePath));
-                ftpClient.completePendingCommand(); 
+                fileContents.add(new FileContent(content, errorFilePath));
+                ftpClient.completePendingCommand();
             }
         } finally {
             if (ftpClient.isConnected()) {
@@ -61,19 +69,17 @@ public class FTPReadService {
         return fileContents;
     }
 
-    public void moveToErrorDirectory(String server, String user, String password, int port, 
-                                     String originalFilePath, String errorDirectoryPath) throws IOException {
+    public void deleteFile(String server, String user, String password, int port, String filePath) throws IOException {
         FTPClient ftpClient = new FTPClient();
         try {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
-
-            String errorFilePath = errorDirectoryPath + "/" + originalFilePath.substring(originalFilePath.lastIndexOf('/') + 1);
-            boolean moved = ftpClient.rename(originalFilePath, errorFilePath);
-
-            if (!moved) {
-                throw new IOException("Failed to move file to error directory");
+    
+            boolean deleted = ftpClient.deleteFile(filePath);
+    
+            if (!deleted) {
+                throw new IOException("Failed to delete file: " + filePath);
             }
         } finally {
             if (ftpClient.isConnected()) {

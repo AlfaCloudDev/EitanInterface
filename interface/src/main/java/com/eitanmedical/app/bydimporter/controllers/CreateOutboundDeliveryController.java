@@ -1,8 +1,11 @@
 package com.eitanmedical.app.bydimporter.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eitanmedical.app.bydimporter.boundries.FileNamePostBYDDto;
 import com.eitanmedical.app.bydimporter.services.FileProcessingInterface;
 
 import java.io.IOException;
@@ -19,5 +22,11 @@ public class CreateOutboundDeliveryController {
     @GetMapping(path = "/CreateOutboundDeliveryNew") //CreateOutboundDelivery
     public String createOutboundDelivery() throws IOException {
         return itemProcessingService.processAllFilesAndSendToByD();
+    }
+
+    @PostMapping(path = "/MoveFileToSuccess")
+    public String moveFileToSuccess(@RequestBody FileNamePostBYDDto fileNameDto) throws IOException {
+        itemProcessingService.moveFileToSuccessFolder(fileNameDto.getFileName());
+        return "File moved to Success folder";
     }
 }
