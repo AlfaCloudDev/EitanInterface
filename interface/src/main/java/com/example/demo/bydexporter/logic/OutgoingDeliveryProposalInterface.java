@@ -1,10 +1,10 @@
-package com.example.demo.logic;
+package com.example.demo.bydexporter.logic;
 
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 
-import com.example.demo.boundries.OutgoingDeliveryProposal;
+import com.example.demo.bydexporter.boundries.OutgoingDeliveryProposal;
 
 public interface OutgoingDeliveryProposalInterface {
     

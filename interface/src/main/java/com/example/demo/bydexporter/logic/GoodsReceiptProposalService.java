@@ -1,4 +1,4 @@
-package com.example.demo.logic;
+package com.example.demo.bydexporter.logic;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.boundries.GoodsReceiptProposal;
+import com.example.demo.bydexporter.boundries.GoodsReceiptProposal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service

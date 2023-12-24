@@ -1,4 +1,4 @@
-package com.example.demo.boundries;
+package com.example.demo.bydexporter.boundries;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

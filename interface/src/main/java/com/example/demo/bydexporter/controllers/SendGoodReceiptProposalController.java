@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.example.demo.bydexporter.controllers;
 
 import java.util.Map;
 
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.boundries.GoodsReceiptProposal;
-import com.example.demo.logic.GoodsReceiptProposalInterface;
+import com.example.demo.bydexporter.boundries.GoodsReceiptProposal;
+import com.example.demo.bydexporter.logic.GoodsReceiptProposalInterface;
 
 
 
