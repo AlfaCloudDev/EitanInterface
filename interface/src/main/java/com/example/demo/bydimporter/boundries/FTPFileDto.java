@@ -1,4 +1,4 @@
-package com.example.bydimporter.boundries;
+package com.example.demo.bydimporter.boundries;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;

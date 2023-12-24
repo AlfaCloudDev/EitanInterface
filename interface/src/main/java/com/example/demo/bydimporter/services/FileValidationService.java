@@ -1,6 +1,6 @@
-package com.example.bydimporter.services;
+package com.example.demo.bydimporter.services;
 
-import com.example.bydimporter.boundries.FTPFileDto;
+import com.example.demo.bydimporter.boundries.FTPFileDto;
 
 public class FileValidationService {
     

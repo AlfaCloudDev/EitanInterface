@@ -1,7 +1,7 @@
-package com.example.bydimporter.services;
+package com.example.demo.bydimporter.services;
 
-import com.example.bydimporter.boundries.FTPFileDto;
-import com.example.bydimporter.boundries.OutboundDeliveryCreationDto;
+import com.example.demo.bydimporter.boundries.FTPFileDto;
+import com.example.demo.bydimporter.boundries.OutboundDeliveryCreationDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
