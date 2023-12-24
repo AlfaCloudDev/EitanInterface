@@ -2,6 +2,7 @@ package com.eitanmedical.app.bydimporter.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 import com.eitanmedical.app.bydimporter.services.FileProcessingInterface;
 
@@ -17,7 +18,7 @@ public class CreateOutboundDeliveryController {
     }
     
     @GetMapping(path = "/CreateOutboundDeliveryNew") //CreateOutboundDelivery
-    public String createOutboundDelivery() throws IOException {
+    public String createOutboundDelivery(Authentication authentication) throws IOException {
         return itemProcessingService.processAllFilesAndSendToByD();
     }
 }
