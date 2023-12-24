@@ -27,7 +27,7 @@ public class CreateOutboundDeliveryController {
 
     @PostMapping(path = "/MoveFileToSuccess")
     public String moveFileToSuccess(@RequestBody FileNamePostBYDDto fileNameDto) throws IOException {
-        itemProcessingService.moveFileToSuccessFolder(fileNameDto.getFileName());
+        itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName());
         return "File moved to Success folder";
     }
 }
