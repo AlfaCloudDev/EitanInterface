@@ -15,7 +15,7 @@ public class CreateOutboundDeliveryController {
         this.itemProcessingService = itemProcessingService;
     }
     
-    @GetMapping(path = "/CreateOutboundDelivery2") 
+    @GetMapping(path = "/CreateOutboundDelivery") 
     public String createOutboundDelivery() throws IOException {
         return itemProcessingService.processAllFilesAndSendToByD();
     }
