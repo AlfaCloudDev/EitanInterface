@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 
-import com.eitanmedical.app.bydimporter.boundries.FileNamePostBYDDto;
+import com.eitanmedical.app.bydimporter.boundries.OutBoundFileNamePostBYDDto;
 import com.eitanmedical.app.bydimporter.services.FileProcessingInterface;
 
 import java.io.IOException;
@@ -25,8 +25,8 @@ public class CreateOutboundDeliveryController {
         return itemProcessingService.processAllFilesAndSendToByD();
     }
 
-    @PostMapping(path = "/MoveFileToSuccess")
-    public String moveFileToSuccess(@RequestBody FileNamePostBYDDto fileNameDto) throws IOException {
+    @PostMapping(path = "/PostProcessFiles")
+    public String PostProcessFiles(@RequestBody OutBoundFileNamePostBYDDto fileNameDto) throws IOException {
         itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName());
         return "File moved to Success folder";
     }

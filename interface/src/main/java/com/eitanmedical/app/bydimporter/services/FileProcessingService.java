@@ -1,6 +1,6 @@
 package com.eitanmedical.app.bydimporter.services;
 
-import com.eitanmedical.app.bydimporter.boundries.FTPFileDto;
+import com.eitanmedical.app.bydimporter.boundries.OutboundFTPFileDto;
 import com.eitanmedical.app.bydimporter.boundries.OutboundDeliveryCreationDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,22 +43,22 @@ public class FileProcessingService implements FileProcessingInterface {
     }
 
     @Override
-    public String processAllFilesAndSendToByD() throws IOException {
-        List<String> byDResponses = new ArrayList<>();
-        List<FTPReadService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath,errorDirectoryPath);
+public String processAllFilesAndSendToByD() throws IOException {
+    List<String> byDResponses = new ArrayList<>();
+    List<FTPReadService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
 
-        for (FTPReadService.FileContent fileContent : fileContents) {
-            FTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), FTPFileDto.class);
+    for (FTPReadService.FileContent fileContent : fileContents) {
+        OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
 
-            if (!FileValidationService.isValidFile(ftpFileDto)) {
-                // Move file to error directory if validation fails
-                //ftpReadService.moveToErrorDirectory(ftpServer, ftpUser, ftpPassword, ftpPort, fileContent.getFilePath(), errorDirectoryPath);
-                continue;
-            }
+        if (!FileValidationService.isValidFile(ftpFileDto)) {
+            // Handle invalid file
+            continue;
+        }
 
-            OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
-            outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
-            outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
+        OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
+        outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
+        outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
+        outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
                 OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
@@ -92,5 +92,10 @@ public class FileProcessingService implements FileProcessingInterface {
     public void finalizeFileProcessing(String fileName) throws IOException {
         String filePath = errorDirectoryPath + "/" + fileName;
         ftpReadService.deleteFile(ftpServer, ftpUser, ftpPassword, ftpPort, filePath);
+    }
+
+    // Helper method to extract the filename from the file path
+    private String extractFileName(String filePath) {
+        return filePath.substring(filePath.lastIndexOf('/') + 1);
     }
 }

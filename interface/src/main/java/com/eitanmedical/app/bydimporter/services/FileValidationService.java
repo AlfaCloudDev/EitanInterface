@@ -1,17 +1,17 @@
 package com.eitanmedical.app.bydimporter.services;
 
-import com.eitanmedical.app.bydimporter.boundries.FTPFileDto;
+import com.eitanmedical.app.bydimporter.boundries.OutboundFTPFileDto;
 
 public class FileValidationService {
     
-    public static boolean isValidFile(FTPFileDto fileDto) {
+    public static boolean isValidFile(OutboundFTPFileDto fileDto) {
         if (fileDto.getReference() == null || fileDto.getReference().isEmpty() ||
             fileDto.getShipFromSite() == null || fileDto.getShipFromSite().isEmpty() ||
             fileDto.getItems() == null || fileDto.getItems().isEmpty()) {
             return false;
         }
 
-        for (FTPFileDto.ItemData item : fileDto.getItems()) {
+        for (OutboundFTPFileDto.ItemData item : fileDto.getItems()) {
             if (item.getProductID() == null || item.getProductID().isEmpty() ||
                 item.getLineItem() == null || item.getLineItem().isEmpty() ||
                 item.getQuantity() == null ||

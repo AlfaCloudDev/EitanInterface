@@ -3,7 +3,7 @@ package com.eitanmedical.app.bydimporter.boundries;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FTPFileDto {
+public class OutboundFTPFileDto {
     @JsonProperty("Reference")
     private String reference;
 

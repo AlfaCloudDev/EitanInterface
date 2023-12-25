@@ -1,6 +1,6 @@
 package com.eitanmedical.app.bydimporter.boundries;
 
-public class FileNamePostBYDDto {
+public class OutBoundFileNamePostBYDDto {
     private String fileName;
 
     // Getters and Setters

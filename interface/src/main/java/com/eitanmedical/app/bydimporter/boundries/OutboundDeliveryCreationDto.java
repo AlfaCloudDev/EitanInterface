@@ -11,6 +11,9 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("ShipFromSite")
     private String shipFromSite;
 
+    @JsonProperty("FileName") // Adjust the property name as needed to match ByD's expected field name
+    private String fileName;
+
     @JsonProperty("OutboundDeliveryCreationItem")
     private List<OutboundDeliveryCreationItem> outboundDeliveryCreationItems;
 
@@ -24,6 +27,15 @@ public class OutboundDeliveryCreationDto {
     }
 
     // Getters and Setters
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+
     public String getSalesOrderID() {
         return salesOrderID;
     }
