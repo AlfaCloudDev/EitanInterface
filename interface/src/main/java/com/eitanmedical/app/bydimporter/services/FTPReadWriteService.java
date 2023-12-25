@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class FTPReadService {
+public class FTPReadWriteService {
 
     public static class FileContent {
         private final String content;

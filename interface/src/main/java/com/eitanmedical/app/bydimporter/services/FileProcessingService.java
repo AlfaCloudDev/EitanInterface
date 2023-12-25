@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class FileProcessingService implements FileProcessingInterface {
     @Autowired
-    private FTPReadService ftpReadService;
+    private FTPReadWriteService ftpReadService;
 
     @Autowired
     private ByDODataService byDODataService;
@@ -45,9 +45,9 @@ public class FileProcessingService implements FileProcessingInterface {
     @Override
 public String processAllFilesAndSendToByD() throws IOException {
     List<String> byDResponses = new ArrayList<>();
-    List<FTPReadService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
+    List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
 
-    for (FTPReadService.FileContent fileContent : fileContents) {
+    for (FTPReadWriteService.FileContent fileContent : fileContents) {
         OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
 
         if (!FileValidationService.isValidFile(ftpFileDto)) {
