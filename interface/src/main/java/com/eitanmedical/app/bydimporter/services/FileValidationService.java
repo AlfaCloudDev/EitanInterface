@@ -14,10 +14,17 @@ public class FileValidationService {
         for (OutboundFTPFileDto.ItemData item : fileDto.getItems()) {
             if (item.getProductID() == null || item.getProductID().isEmpty() ||
                 item.getLineItem() == null || item.getLineItem().isEmpty() ||
-                item.getQuantity() == null ||
-                item.getSerialNumbers() == null || item.getSerialNumbers().isEmpty() ||
-                item.getSerialNumbers().stream().anyMatch(serial -> serial.getSerialNumber() == null || serial.getSerialNumber().isEmpty())) {
+                item.getQuantity() == null) {
                 return false;
+            }
+
+            // Check if Serial Numbers exist and are valid
+            if (item.getSerialNumbers() != null && !item.getSerialNumbers().isEmpty()) {
+                for (OutboundFTPFileDto.SerialNumberDto serial : item.getSerialNumbers()) {
+                    if (serial.getSerialNumber() == null || serial.getSerialNumber().isEmpty()) {
+                        return false;
+                    }
+                }
             }
         }
 

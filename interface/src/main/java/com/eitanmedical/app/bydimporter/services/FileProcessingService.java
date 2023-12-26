@@ -51,7 +51,7 @@ public String processAllFilesAndSendToByD() throws IOException {
         OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
 
         if (!FileValidationService.isValidFile(ftpFileDto)) {
-            // Handle invalid file
+            System.out.println(":Invalid File:");
             continue;
         }
 
