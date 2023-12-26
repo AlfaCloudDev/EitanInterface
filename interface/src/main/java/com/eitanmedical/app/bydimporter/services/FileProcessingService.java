@@ -59,7 +59,6 @@ public String processAllFilesAndSendToByD() throws IOException {
         outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
         outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
         outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
-        System.out.println("fileName:" + extractFileName(fileContent.getFilePath()));
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
                 OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
