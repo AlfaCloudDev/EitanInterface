@@ -45,6 +45,9 @@ public class OutboundFTPFileDto {
         @JsonProperty("Quantity")
         private Double quantity;
 
+        @JsonProperty("LotCode")
+        private String lotcode;
+
         @JsonProperty("SerialNumbers")
         private List<SerialNumberDto> serialNumbers;
 
@@ -56,6 +59,14 @@ public class OutboundFTPFileDto {
     
         public void setProductID(String productID) {
             this.productID = productID;
+        }
+
+        public String getLotCode() {
+            return productID;
+        }
+    
+        public void setLotCode(String LotCode) {
+            this.lotcode = LotCode;
         }
 
         public String getLineItem() {

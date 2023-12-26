@@ -65,7 +65,7 @@ public String processAllFilesAndSendToByD() throws IOException {
                 creationItem.setLineItem(item.getLineItem());
                 creationItem.setProductID(item.getProductID());
                 creationItem.setActualQuantity(item.getQuantity().toString());
-                creationItem.setLogisticsAreaID("TEST");
+                creationItem.setLogisticsAreaID(item.getLotCode());
 
                 List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
                     Optional.ofNullable(item.getSerialNumbers())
