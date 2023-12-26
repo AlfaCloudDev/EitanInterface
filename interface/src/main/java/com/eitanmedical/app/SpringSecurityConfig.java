@@ -16,9 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SpringSecurityConfig {
 
-    @Value("${EITAN_INTERFACE_USERNAME:default_value}")
+    @Value("${EITAN_INTERFACE_USERNAME:eitaninterface}")
     private String username;
-    @Value("${EITAN_INTERFACE_PASSWORD:default_value}")
+    @Value("${EITAN_INTERFACE_PASSWORD:AlfaPass01}")
     private String password;
 
     @Bean

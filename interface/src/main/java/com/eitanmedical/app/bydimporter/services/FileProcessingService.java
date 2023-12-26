@@ -24,13 +24,13 @@ public class FileProcessingService implements FileProcessingInterface {
 
     private final ObjectMapper objectMapper;
 
-    @Value("${EITAN_INTERFACE_FTP_PASSWORD:default_value}")
+    @Value("${EITAN_INTERFACE_FTP_PASSWORD:admin}")
     private String ftpPassword;
-    @Value("${EITAN_INTERFACE_FTP_USERNAME:default_value}")
+    @Value("${EITAN_INTERFACE_FTP_USERNAME:admin}")
     private String ftpUser;
-    @Value("${EITAN_INTERFACE_FTP_SERVER:default_value}")
+    @Value("${EITAN_INTERFACE_FTP_SERVER:admin}")
     private String ftpServer;
-    @Value("${EITAN_INTERFACE_FTP_PORT:0}")
+    @Value("${EITAN_INTERFACE_FTP_PORT:21}")
     private int ftpPort;
 
     private final String ftpDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";

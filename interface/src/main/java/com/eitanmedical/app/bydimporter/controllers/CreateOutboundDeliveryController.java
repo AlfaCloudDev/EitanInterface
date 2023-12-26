@@ -22,12 +22,13 @@ public class CreateOutboundDeliveryController {
     
     @GetMapping(path = "/CreateOutboundDeliveryNew") //CreateOutboundDelivery
     public String createOutboundDelivery(Authentication authentication) throws IOException {
+    //public String createOutboundDelivery() throws IOException {
         return itemProcessingService.processAllFilesAndSendToByD();
     }
 
     @PostMapping(path = "/PostProcessFiles")
     public String PostProcessFiles(@RequestBody OutBoundFileNamePostBYDDto fileNameDto) throws IOException {
         itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName());
-        return "File moved to Success folder";
+        return "File Deleted";
     }
 }
