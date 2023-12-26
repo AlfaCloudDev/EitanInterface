@@ -11,7 +11,7 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("ShipFromSite")
     private String shipFromSite;
 
-    @JsonProperty("FileName") // Adjust the property name as needed to match ByD's expected field name
+    @JsonProperty("FTPFileName") // Adjust the property name as needed to match ByD's expected field name
     private String fileName;
 
     @JsonProperty("OutboundDeliveryCreationItem")

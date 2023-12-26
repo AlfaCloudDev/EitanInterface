@@ -24,11 +24,11 @@ public class FileProcessingService implements FileProcessingInterface {
 
     private final ObjectMapper objectMapper;
 
-    @Value("${EITAN_INTERFACE_FTP_PASSWORD:admin}")
+    @Value("${EITAN_INTERFACE_FTP_PASSWORD:rhcl1234}")
     private String ftpPassword;
-    @Value("${EITAN_INTERFACE_FTP_USERNAME:admin}")
+    @Value("${EITAN_INTERFACE_FTP_USERNAME:rhcleitan}")
     private String ftpUser;
-    @Value("${EITAN_INTERFACE_FTP_SERVER:admin}")
+    @Value("${EITAN_INTERFACE_FTP_SERVER:ftp.drivehq.com}")
     private String ftpServer;
     @Value("${EITAN_INTERFACE_FTP_PORT:21}")
     private int ftpPort;
@@ -42,7 +42,7 @@ public class FileProcessingService implements FileProcessingInterface {
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    @Override
+@Override
 public String processAllFilesAndSendToByD() throws IOException {
     List<String> byDResponses = new ArrayList<>();
     List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
@@ -59,6 +59,7 @@ public String processAllFilesAndSendToByD() throws IOException {
         outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
         outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
         outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
+        System.out.println("fileName:" + extractFileName(fileContent.getFilePath()));
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
                 OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();

@@ -46,19 +46,22 @@ public class FTPReadWriteService {
                 if (!file.isFile()) {
                     continue;
                 }
-    
+            
                 String originalFilePath = directoryPath + "/" + file.getName();
                 String errorFilePath = errorDirectoryPath + "/" + file.getName();
-    
-                // Move the file to the error directory
-                if (!ftpClient.rename(originalFilePath, errorFilePath)) {
-                    throw new IOException("Failed to move file: " + file.getName());
+            
+                // Attempt to move the file to the error directory
+                boolean isRenamed = ftpClient.rename(originalFilePath, errorFilePath);
+                if (!isRenamed) {
+                    System.out.println("Failed to move file. FTP Server Reply: " + ftpClient.getReplyString());
+                    continue; // Skip processing this file
                 }
-    
-                // Read the file from the error directory
+                
+                // Read the file content from the error directory
                 InputStream inputStream = ftpClient.retrieveFileStream(errorFilePath);
                 String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
                 fileContents.add(new FileContent(content, errorFilePath));
+                inputStream.close();
                 ftpClient.completePendingCommand();
             }
         } finally {
@@ -79,7 +82,7 @@ public class FTPReadWriteService {
             boolean deleted = ftpClient.deleteFile(filePath);
     
             if (!deleted) {
-                throw new IOException("Failed to delete file: " + filePath);
+                System.out.println("Failed to delete file. FTP Server Reply: " + ftpClient.getReplyString());
             }
         } finally {
             if (ftpClient.isConnected()) {
