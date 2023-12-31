@@ -42,51 +42,51 @@ public class FileProcessingService implements FileProcessingInterface {
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-@Override
-public String processAllFilesAndSendToByD() throws IOException {
-    List<String> byDResponses = new ArrayList<>();
-    List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
+    @Override
+    public String processAllFilesAndSendToByD() throws IOException {
+        List<String> byDResponses = new ArrayList<>();
+        List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
 
-    for (FTPReadWriteService.FileContent fileContent : fileContents) {
-        OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
+        for (FTPReadWriteService.FileContent fileContent : fileContents) {
+            OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
 
-        if (!FileValidationService.isValidFile(ftpFileDto)) {
-            System.out.println(":Invalid File:");
-            continue;
+            if (!FileValidationService.isValidFile(ftpFileDto)) {
+                System.out.println(":Invalid File:");
+                continue;
+            }
+
+            OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
+            outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
+            outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
+            outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
+
+                List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
+                    OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
+                    creationItem.setLineItem(item.getLineItem());
+                    creationItem.setProductID(item.getProductID());
+                    creationItem.setActualQuantity(item.getQuantity().toString());
+                    creationItem.setLogisticsAreaID(item.getLotCode());
+
+                    List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
+                        Optional.ofNullable(item.getSerialNumbers())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
+                            .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
+                            .collect(Collectors.toList());
+
+                    creationItem.setOutboundDeliveryCreationSerials(serials);
+                    return creationItem;
+                }).collect(Collectors.toList());
+
+                outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
+                String postBody = objectMapper.writeValueAsString(outboundDelivery);
+                String byDResponse = byDODataService.sendPostRequestToByD("https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection", postBody);
+
+                byDResponses.add(byDResponse);
+            }
+
+            return String.join("\n", byDResponses);
         }
-
-        OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
-        outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
-        outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
-        outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
-
-            List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
-                OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
-                creationItem.setLineItem(item.getLineItem());
-                creationItem.setProductID(item.getProductID());
-                creationItem.setActualQuantity(item.getQuantity().toString());
-                creationItem.setLogisticsAreaID(item.getLotCode());
-
-                List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
-                    Optional.ofNullable(item.getSerialNumbers())
-                        .orElseGet(Collections::emptyList)
-                        .stream()
-                        .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
-                        .collect(Collectors.toList());
-
-                creationItem.setOutboundDeliveryCreationSerials(serials);
-                return creationItem;
-            }).collect(Collectors.toList());
-
-            outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
-            String postBody = objectMapper.writeValueAsString(outboundDelivery);
-            String byDResponse = byDODataService.sendPostRequestToByD("https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection", postBody);
-
-            byDResponses.add(byDResponse);
-        }
-
-        return String.join("\n", byDResponses);
-    }
 
     @Override
     public void finalizeFileProcessing(String fileName) throws IOException {
