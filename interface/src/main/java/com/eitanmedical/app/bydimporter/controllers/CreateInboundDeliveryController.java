@@ -75,65 +75,69 @@ public class CreateInboundDeliveryController {
     private String buildSOAPRequestBody(String content) {
         // Parsing the file content as a JSON object
         JSONObject obj = new JSONObject(content);
-
+    
         // Extracting relevant information from the JSON object
         String poID = obj.getString("ID");
         String supplierID = obj.getString("SupplierID");
         String siteID = obj.getString("SiteID");
-        String deliveryDate = obj.getString("Purchase Order Delivery Date");
-
+        String deliveryDate = obj.getString("PurchaseOrderDeliveryDate");
+    
         // Building the SOAP request body
-        String body = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:glob=\"http://sap.com/xi/SAPGlobal20/Global\">\r\n"
-                + "   <soapenv:Header/>\r\n" + "   <soapenv:Body>\r\n"
-                + "      <glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n"
-                + "         <BasicMessageHeader />\r\n"
-                + "         <StandardInboundDeliveryNotification actionCode=\"01\" cancellationDocumentIndicator=\"false\" releaseDocumentIndicator=\"true\">\r\n"
-                + "         <DeliveryNotificationID>" + poID + "_in</DeliveryNotificationID>\r\n"
-                + "         <ProcessingTypeCode>SD</ProcessingTypeCode>\r\n"
-                + "         <DeliveryDate>\r\n"
-                + "         <StartDateTime timeZoneCode=\"UTC\">" + deliveryDate + "T12:00:00.1234567Z</StartDateTime>\r\n"
-                + "         <EndDateTime timeZoneCode=\"UTC\">" + deliveryDate + "T12:00:00.1234567Z</EndDateTime>\r\n"
-                + "         </DeliveryDate>\r\n"
-                + "         <ShipToLocationID>" + siteID + "</ShipToLocationID>\r\n"
-                + "         <VendorID>" + siteID + "</VendorID>\r\n";
-
+        StringBuilder body = new StringBuilder();
+        body.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:glob=\"http://sap.com/xi/SAPGlobal20/Global\">\r\n")
+            .append("   <soapenv:Header/>\r\n")
+            .append("   <soapenv:Body>\r\n")
+            .append("      <glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n")
+            .append("         <BasicMessageHeader />\r\n")
+            .append("         <StandardInboundDeliveryNotification actionCode=\"01\" cancellationDocumentIndicator=\"false\" releaseDocumentIndicator=\"true\">\r\n")
+            .append("         <DeliveryNotificationID>").append(poID).append("_in</DeliveryNotificationID>\r\n")
+            .append("         <ProcessingTypeCode>SD</ProcessingTypeCode>\r\n")
+            .append("         <DeliveryDate>\r\n")
+            .append("         <StartDateTime timeZoneCode=\"UTC\">").append(deliveryDate).append("T12:00:00.1234567Z</StartDateTime>\r\n")
+            .append("         <EndDateTime timeZoneCode=\"UTC\">").append(deliveryDate).append("T12:00:00.1234567Z</EndDateTime>\r\n")
+            .append("         </DeliveryDate>\r\n")
+            .append("         <ShipToLocationID>").append(siteID).append("</ShipToLocationID>\r\n")
+            .append("         <VendorID>").append(siteID).append("</VendorID>\r\n");
+    
         // Processing each item in the JSON array
         JSONArray items = obj.getJSONArray("Item");
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
             String lineItemID = item.getString("LineItemID");
             String productID = item.getString("ProductID");
-            String actualQuantity = item.getString("ReceivedPurchaseOrderQuantity");
-
+            Integer actualQuantity = item.getInt("OpenPurchaseOrderQuantity");
+    
             // Appending each item's details to the SOAP body
-            body += "         <Item actionCode=\"01\" cancellationItemIndicator=\"false\">\r\n"
-                    + "           <LineItemID>" + lineItemID + "</LineItemID>\r\n"
-                    + "           <TypeCode>14</TypeCode>\r\n"
-                    + "           <ProcessingTypeCode>INST</ProcessingTypeCode>\r\n"
-                    + "           <DeliveryQuantity unitCode=\"EA\">" + actualQuantity + "</DeliveryQuantity>\r\n"
-                    + "           <SellerPartyID>" + supplierID + "</SellerPartyID>\r\n"
-                    + "           <BuyerPartyID>10000</BuyerPartyID>\r\n"
-                    + "           <ItemProduct actionCode=\"01\">\r\n"
-                    + "             <ProductID>" + productID + "</ProductID>\r\n";
-
-            // Processing serial numbers for each item
-            JSONArray serials = item.getJSONArray("SerialNumbers");
-            for (int j = 0; j < serials.length(); j++) {
-                JSONObject serial = serials.getJSONObject(j);
-                String serialNum = serial.getString("SerialNumber");
-                body += "             <SerialID>" + serialNum + "</SerialID>\r\n";
+            body.append("         <Item actionCode=\"01\" cancellationItemIndicator=\"false\">\r\n")
+                .append("           <LineItemID>").append(lineItemID).append("</LineItemID>\r\n")
+                .append("           <TypeCode>14</TypeCode>\r\n")
+                .append("           <ProcessingTypeCode>INST</ProcessingTypeCode>\r\n")
+                .append("           <DeliveryQuantity unitCode=\"EA\">").append(actualQuantity).append("</DeliveryQuantity>\r\n")
+                .append("           <SellerPartyID>").append(supplierID).append("</SellerPartyID>\r\n")
+                .append("           <BuyerPartyID>10000</BuyerPartyID>\r\n")
+                .append("           <ItemProduct actionCode=\"01\">\r\n")
+                .append("             <ProductID>").append(productID).append("</ProductID>\r\n");
+    
+            // Check if "SerialNumbers" array exists and is not empty
+            if (item.has("SerialNumbers") && !item.getJSONArray("SerialNumbers").isEmpty()) {
+                JSONArray serials = item.getJSONArray("SerialNumbers");
+                for (int j = 0; j < serials.length(); j++) {
+                    JSONObject serial = serials.getJSONObject(j);
+                    String serialNum = serial.getString("SerialNumber");
+                    body.append("             <SerialID>").append(serialNum).append("</SerialID>\r\n");
+                }
             }
-
-            body += "           </ItemProduct>\r\n"
-                    + "         </Item>\r\n";
+    
+            body.append("           </ItemProduct>\r\n")
+                .append("         </Item>\r\n");
         }
-
-        body += "       </StandardInboundDeliveryNotification>\r\n"
-                + "     </glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n"
-                + "   </soapenv:Body>\r\n"
-                + "</soapenv:Envelope>";
-
-        return body;
+    
+        body.append("       </StandardInboundDeliveryNotification>\r\n")
+            .append("     </glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n")
+            .append("   </soapenv:Body>\r\n")
+            .append("</soapenv:Envelope>");
+    
+        return body.toString();
     }
 
     private String sendSOAPRequest(String body) throws UnirestException {
