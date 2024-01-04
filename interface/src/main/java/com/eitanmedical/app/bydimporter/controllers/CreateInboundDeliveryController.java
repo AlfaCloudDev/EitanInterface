@@ -90,14 +90,15 @@ public class CreateInboundDeliveryController {
             .append("      <glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n")
             .append("         <BasicMessageHeader />\r\n")
             .append("         <StandardInboundDeliveryNotification actionCode=\"01\" cancellationDocumentIndicator=\"false\" releaseDocumentIndicator=\"true\">\r\n")
-            .append("         <DeliveryNotificationID>").append(poID).append("_in</DeliveryNotificationID>\r\n")
+            //.append("         <DeliveryNotificationID>").append(poID).append("_in</DeliveryNotificationID>\r\n")
+            .append("         <DeliveryNotificationID>").append(poID).append("</DeliveryNotificationID>\r\n")
             .append("         <ProcessingTypeCode>SD</ProcessingTypeCode>\r\n")
             .append("         <DeliveryDate>\r\n")
             .append("         <StartDateTime timeZoneCode=\"UTC\">").append(deliveryDate).append("T12:00:00.1234567Z</StartDateTime>\r\n")
             .append("         <EndDateTime timeZoneCode=\"UTC\">").append(deliveryDate).append("T12:00:00.1234567Z</EndDateTime>\r\n")
             .append("         </DeliveryDate>\r\n")
             .append("         <ShipToLocationID>").append(siteID).append("</ShipToLocationID>\r\n")
-            .append("         <VendorID>").append(siteID).append("</VendorID>\r\n");
+            .append("         <VendorID>").append(supplierID).append("</VendorID>\r\n");
     
         // Processing each item in the JSON array
         JSONArray items = obj.getJSONArray("Item");
@@ -115,9 +116,16 @@ public class CreateInboundDeliveryController {
                 .append("           <DeliveryQuantity unitCode=\"EA\">").append(actualQuantity).append("</DeliveryQuantity>\r\n")
                 .append("           <SellerPartyID>").append(supplierID).append("</SellerPartyID>\r\n")
                 .append("           <BuyerPartyID>10000</BuyerPartyID>\r\n")
+                .append( "          <ItemBusinessTransactionDocumentReference actionCode=\"01\">\r\n")
+                .append("               <PurchaseOrder>")
+                .append("                   <ID>").append(poID).append("</ID>\r\n")
+                .append("                   <TypeCode>001</TypeCode>\r\n")
+                .append("                   <ItemID>").append(lineItemID).append("</ItemID>\r\n")
+                .append("               </PurchaseOrder>\r\n")
+                .append("           </ItemBusinessTransactionDocumentReference>\r\n")
                 .append("           <ItemProduct actionCode=\"01\">\r\n")
                 .append("             <ProductID>").append(productID).append("</ProductID>\r\n");
-    
+
             // Check if "SerialNumbers" array exists and is not empty
             if (item.has("SerialNumbers") && !item.getJSONArray("SerialNumbers").isEmpty()) {
                 JSONArray serials = item.getJSONArray("SerialNumbers");
@@ -136,7 +144,7 @@ public class CreateInboundDeliveryController {
             .append("     </glob:StandardInboundDeliveryNotificationBundleCreateRequest_sync>\r\n")
             .append("   </soapenv:Body>\r\n")
             .append("</soapenv:Envelope>");
-    
+        System.out.println("body:\n"+body.toString()+"\n");
         return body.toString();
     }
 

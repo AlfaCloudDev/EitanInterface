@@ -65,15 +65,20 @@ public class FileProcessingService implements FileProcessingInterface {
                     creationItem.setLineItem(item.getLineItem());
                     creationItem.setProductID(item.getProductID());
                     creationItem.setActualQuantity(item.getQuantity().toString());
-                    creationItem.setLogisticsAreaID(item.getLotCode());
+                    creationItem.setIdentifiedStock(item.getLotCode());
 
-                    List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
-                        Optional.ofNullable(item.getSerialNumbers())
-                            .orElseGet(Collections::emptyList)
-                            .stream()
-                            .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
-                            .collect(Collectors.toList());
 
+                     List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
+                    Optional.ofNullable(item.getSerialNumbers())
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(serialNumberDto -> 
+                             new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
+                                 serialNumberDto.getSerialNumber(), 
+                                 serialNumberDto.getLotcode() 
+                             ))
+                        .collect(Collectors.toList());
+            
                     creationItem.setOutboundDeliveryCreationSerials(serials);
                     return creationItem;
                 }).collect(Collectors.toList());
