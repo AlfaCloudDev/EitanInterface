@@ -62,7 +62,7 @@ public class OutboundFTPFileDto {
         }
 
         public String getLotCode() {
-            return productID;
+            return lotcode;
         }
     
         public void setLotCode(String LotCode) {
@@ -100,6 +100,9 @@ public class OutboundFTPFileDto {
         @JsonProperty("SerialNumber")
         private String serialNumber;
 
+        @JsonProperty("lotCode")
+        private String lotCode;
+
         //GETTERS SETTERS
         
         public String getSerialNumber() {
@@ -108,6 +111,14 @@ public class OutboundFTPFileDto {
 
         public void setSerialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
+        }
+
+        public String getLotcode(){
+            return lotCode;
+        }
+
+        public void setLotCode(String lotCode){
+            this.lotCode = lotCode;
         }
     }
 
