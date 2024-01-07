@@ -1,6 +1,8 @@
 package com.eitanmedical.app.bydimporter.boundries;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OutboundDeliveryCreationDto {
@@ -16,6 +18,9 @@ public class OutboundDeliveryCreationDto {
 
     @JsonProperty("OutboundDeliveryCreationItem")
     private List<OutboundDeliveryCreationItem> outboundDeliveryCreationItems;
+
+    @JsonProperty("UniqueRequestID")
+    private String uniquRequestID;
 
     // Constructors
     public OutboundDeliveryCreationDto() {}
@@ -60,6 +65,14 @@ public class OutboundDeliveryCreationDto {
         this.outboundDeliveryCreationItems = items;
     }
 
+    public String getUniquRequestID() {
+        return uniquRequestID;
+    }
+
+    public void setUniquRequestID(String uniquRequestID) {
+        this.uniquRequestID = uniquRequestID;
+    }
+
     // Inner class OutboundDeliveryCreationItem
     public static class OutboundDeliveryCreationItem {
         @JsonProperty("LineItem")
@@ -76,6 +89,7 @@ public class OutboundDeliveryCreationDto {
 
         @JsonProperty("OutboundDeliveryCreationSerial")
         private List<OutboundDeliveryCreationSerial> outboundDeliveryCreationSerials;
+
 
         // Constructors
         public OutboundDeliveryCreationItem() {}
@@ -128,6 +142,7 @@ public class OutboundDeliveryCreationDto {
         public void setOutboundDeliveryCreationSerials(List<OutboundDeliveryCreationSerial> serials) {
             this.outboundDeliveryCreationSerials = serials;
         }
+
     }
 
     // Inner class OutboundDeliveryCreationSerial
