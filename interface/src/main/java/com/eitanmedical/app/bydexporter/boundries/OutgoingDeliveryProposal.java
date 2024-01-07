@@ -11,6 +11,8 @@ public class OutgoingDeliveryProposal {
     private String reference;
     @JsonProperty("ExternalReference")
     private String externalReference;
+    @JsonProperty("UniqueRequestID")
+    private String uniqueRequestID;
     @JsonProperty("ShippingMethod")
     private String shippingMethod;
     @JsonProperty("CustomerFreightPayment")
@@ -66,7 +68,14 @@ public class OutgoingDeliveryProposal {
         this.externalReference = externalReference;
     }
 
+    public String getUniqueRequestID() {
+        return uniqueRequestID;
+    }
 
+
+    public void setUniqueRequestID(String uniqueRequestID) {
+        this.uniqueRequestID = uniqueRequestID;
+    }
 
     public String getShippingMethod() {
         return shippingMethod;
@@ -152,12 +161,14 @@ public class OutgoingDeliveryProposal {
     @Override
     public String toString() {
         return "OutgoingDeliveryProposal [orderDate=" + orderDate + ", reference=" + reference + ", externalReference="
-                + externalReference + ", shippingMethod=" + shippingMethod + ", customerFreightPayment="
-                + customerFreightPayment + ", shipFromSite=" + shipFromSite + ", shipFromLocation=" + shipFromLocation
-                + ", accountID=" + accountID + ", accountName=" + accountName + ", items=" + items + "]";
+                + externalReference + ", uniqueRequestID=" + uniqueRequestID + ", shippingMethod=" + shippingMethod
+                + ", customerFreightPayment=" + customerFreightPayment + ", shipFromSite=" + shipFromSite
+                + ", shipFromLocation=" + shipFromLocation + ", accountID=" + accountID + ", accountName=" + accountName
+                + ", items=" + items + "]";
     }
 
 
+    
 
     
 
