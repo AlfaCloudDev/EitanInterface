@@ -75,7 +75,7 @@ public class FileProcessingService implements FileProcessingInterface {
                         .map(serialNumberDto -> 
                              new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
                                  serialNumberDto.getSerialNumber(), 
-                                 serialNumberDto.getLotcode() 
+                                 serialNumberDto.getLotCode() 
                              ))
                         .collect(Collectors.toList());
             

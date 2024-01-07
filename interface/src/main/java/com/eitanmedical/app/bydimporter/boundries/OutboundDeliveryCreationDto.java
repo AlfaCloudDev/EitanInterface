@@ -156,7 +156,7 @@ public class OutboundDeliveryCreationDto {
         }
 
         public String getSerialIdentifiedStock() {
-            return serialID;
+            return serialIdentifiedStock;
         }
 
         public void setSerialIdentifiedStock(String serialIdentifiedStock) {

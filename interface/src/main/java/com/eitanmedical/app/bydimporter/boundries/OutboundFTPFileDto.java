@@ -113,11 +113,11 @@ public class OutboundFTPFileDto {
             this.serialNumber = serialNumber;
         }
 
-        public String getLotcode(){
+        public String getLotCode() { 
             return lotCode;
         }
-
-        public void setLotCode(String lotCode){
+    
+        public void setLotCode(String lotCode) { 
             this.lotCode = lotCode;
         }
     }
