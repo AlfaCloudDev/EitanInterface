@@ -12,6 +12,9 @@ public class OutboundFTPFileDto {
 
     @JsonProperty("Item")
     private List<ItemData> items;
+    
+    @JsonProperty("UniqueRequestID")
+    private String uniqueRequestID;
 
     //GETTERS SETTERS
 
@@ -33,6 +36,14 @@ public class OutboundFTPFileDto {
 
     public void setShipFromSite(String shipFromSite) {
         this.shipFromSite = shipFromSite;
+    }
+
+    public String getUniqueRequestID() {
+        return uniqueRequestID;
+    }
+
+    public void setUniqueRequestID(String uniqueRequestID) {
+        this.uniqueRequestID = uniqueRequestID;
     }
 
     public static class ItemData {
@@ -84,6 +95,7 @@ public class OutboundFTPFileDto {
         public void setQuantity(Double quantity) {
             this.quantity = quantity;
         }
+
 
 
         public List<SerialNumberDto> getSerialNumbers() {

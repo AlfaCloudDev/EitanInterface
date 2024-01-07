@@ -58,6 +58,7 @@ public class FileProcessingService implements FileProcessingInterface {
             OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
             outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
             outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
+            outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
             outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
 
                 List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
