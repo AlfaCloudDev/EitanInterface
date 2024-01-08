@@ -8,11 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.eitanmedical.app.bydimporter.boundries.LogFileDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Date;
 
 @Service
 public class FileProcessingService implements FileProcessingInterface {
@@ -21,6 +26,9 @@ public class FileProcessingService implements FileProcessingInterface {
 
     @Autowired
     private ByDODataService byDODataService;
+
+    @Autowired
+    private DatabaseValidationService databaseValidationService;
 
     private final ObjectMapper objectMapper;
 
@@ -35,23 +43,39 @@ public class FileProcessingService implements FileProcessingInterface {
 
     private final String ftpDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";
     private final String errorDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Error";
-
+    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection"; 
 
     public FileProcessingService() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    // Method to generate a unique log file name
+    private String createLogFileName() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = sdf.format(new Date());
+        return "LogFile_" + timestamp + ".json";
+    }
+
     @Override
     public String processAllFilesAndSendToByD() throws IOException {
         List<String> byDResponses = new ArrayList<>();
         List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
-
+        
+        LogFileDto logFile = new LogFileDto();
+        logFile.setHeader(new LogFileDto.LogHeaderDto(new Date()));
+        List<LogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
+        
         for (FTPReadWriteService.FileContent fileContent : fileContents) {
             OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
-
-            if (!FileValidationService.isValidFile(ftpFileDto)) {
-                System.out.println(":Invalid File:");
+            List<String> validationErrors = databaseValidationService.validateFields(ftpFileDto);
+    
+            if (!FileValidationService.isValidFile(ftpFileDto) || !validationErrors.isEmpty()) {
+                LogFileDto.FileLogEntryDto fileLogEntry = new LogFileDto.FileLogEntryDto();
+                String fileNameOnly = extractFileName(fileContent.getFilePath());
+                fileLogEntry.setFileName(fileNameOnly);
+                fileLogEntry.setErrorMessages(validationErrors.isEmpty() ? Arrays.asList("Invalid File Structure") : validationErrors);
+                fileLogEntries.add(fileLogEntry);
                 continue;
             }
 
@@ -86,12 +110,24 @@ public class FileProcessingService implements FileProcessingInterface {
 
                 outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
                 String postBody = objectMapper.writeValueAsString(outboundDelivery);
-                String byDResponse = byDODataService.sendPostRequestToByD("https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection", postBody);
+                String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody);
 
                 byDResponses.add(byDResponse);
             }
 
+            logFile.setFileLogEntries(fileLogEntries);
+
+            if (!fileLogEntries.isEmpty()) {
+                String logFileName = createLogFileName();
+                String logContent = convertLogToFileToJson(logFile);
+                FTPReadWriteService.uploadLogFile(ftpServer, ftpUser, ftpPassword, ftpPort, errorDirectoryPath, logFileName, logContent);
+            }
+
             return String.join("\n", byDResponses);
+        }
+
+        private String convertLogToFileToJson(LogFileDto logFile) throws JsonProcessingException {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logFile);
         }
 
     @Override

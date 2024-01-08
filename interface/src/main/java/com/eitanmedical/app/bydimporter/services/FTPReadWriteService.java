@@ -3,6 +3,8 @@ package com.eitanmedical.app.bydimporter.services;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -83,6 +85,34 @@ public class FTPReadWriteService {
     
             if (!deleted) {
                 System.out.println("Failed to delete file. FTP Server Reply: " + ftpClient.getReplyString());
+            }
+        } finally {
+            if (ftpClient.isConnected()) {
+                ftpClient.disconnect();
+            }
+        }
+    }
+
+    // Method to upload log file
+    public static void uploadLogFile(String server, String user, String password, int port, String directoryPath, String logFileName, String logContent) throws IOException {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.changeWorkingDirectory(directoryPath);
+
+            // Convert logContent String to InputStream
+            InputStream inputStream = new ByteArrayInputStream(logContent.getBytes(StandardCharsets.UTF_8));
+
+            // Upload file
+            boolean uploaded = ftpClient.storeFile(logFileName, inputStream);
+            inputStream.close();
+
+            if (!uploaded) {
+                System.out.println("Failed to upload log file. FTP Server Reply: " + ftpClient.getReplyString());
+            }else{
+                System.out.println("success " + ftpClient.getReplyString());
             }
         } finally {
             if (ftpClient.isConnected()) {
