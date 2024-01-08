@@ -73,7 +73,7 @@ public class SendDocumentService implements SendDocumentInterface{
             if (obj instanceof OutgoingDeliveryProposal){
                 OutgoingDeliveryProposal outgoingDeliveryProposal = (OutgoingDeliveryProposal)obj;
                 json = jackson.writeValueAsString(outgoingDeliveryProposal);
-                remoteFile += "OutputDeliveryProposal" + outgoingDeliveryProposal.getReference() + ".json";
+                remoteFile += "WarehouseRequest" + outgoingDeliveryProposal.getUniqueRequestID() + ".json";
             }
             else if (obj instanceof GoodsReceiptProposal){
                 GoodsReceiptProposal goodsReceiptProposal = (GoodsReceiptProposal)obj;
