@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.eitanmedical.app.bydimporter.boundries.LogFileDto;
+import com.eitanmedical.app.bydimporter.boundries.OutBoundDeliveryBTPLogFileDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Date;
 import java.time.LocalDateTime;
@@ -30,19 +30,7 @@ public class FileProcessingService implements FileProcessingInterface {
     private ByDODataService byDODataService;
 
     private final ObjectMapper objectMapper;
-
-    @Value("${EITAN_INTERFACE_FTP_PASSWORD:rhcl1234}")
-    private String ftpPassword;
-    @Value("${EITAN_INTERFACE_FTP_USERNAME:rhcleitan}")
-    private String ftpUser;
-    @Value("${EITAN_INTERFACE_FTP_SERVER:ftp.drivehq.com}")
-    private String ftpServer;
-    @Value("${EITAN_INTERFACE_FTP_PORT:21}")
-    private int ftpPort;
-
-    private final String ftpDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";
-    private final String errorDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Error";
-    private final String successDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Success";
+    
     private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection";
 
     public FileProcessingService() {
@@ -53,19 +41,18 @@ public class FileProcessingService implements FileProcessingInterface {
     @Override
     public String processAllFilesAndSendToByD() throws IOException {
         List<String> byDResponses = new ArrayList<>();
-        List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser,
-                ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
+        List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles();
 
-        LogFileDto logFile = new LogFileDto();
-        logFile.setHeader(new LogFileDto.LogHeaderDto(new Date()));
-        List<LogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
+        OutBoundDeliveryBTPLogFileDto logFile = new OutBoundDeliveryBTPLogFileDto();
+        logFile.setHeader(new OutBoundDeliveryBTPLogFileDto.LogHeaderDto(new Date()));
+        List<OutBoundDeliveryBTPLogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
 
         for (FTPReadWriteService.FileContent fileContent : fileContents) {
             OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
             List<String> validationErrors = FileValidationService.getValidationErrors(ftpFileDto);
         
             if (!validationErrors.isEmpty()) {
-                LogFileDto.FileLogEntryDto fileLogEntry = new LogFileDto.FileLogEntryDto();
+                OutBoundDeliveryBTPLogFileDto.FileLogEntryDto fileLogEntry = new OutBoundDeliveryBTPLogFileDto.FileLogEntryDto();
                 String fileNameOnly = extractFileName(fileContent.getFilePath());
                 fileLogEntry.setFileName(fileNameOnly);
                 fileLogEntry.setErrorMessages(validationErrors);
@@ -112,14 +99,13 @@ public class FileProcessingService implements FileProcessingInterface {
         if (!fileLogEntries.isEmpty()) {
             String logFileName = createLogFileName();
             String logContent = convertLogToFileToJson(logFile);
-            FTPReadWriteService.uploadLogFile(ftpServer, ftpUser, ftpPassword, ftpPort, errorDirectoryPath, logFileName,
-                    logContent);
+            ftpReadService.uploadLogFile(logFileName, logContent); // Call on the instance
         }
 
         return String.join("\n", byDResponses);
     }
 
-    private String convertLogToFileToJson(LogFileDto logFile) throws JsonProcessingException {
+    private String convertLogToFileToJson(OutBoundDeliveryBTPLogFileDto logFile) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logFile);
     }
 
@@ -134,19 +120,18 @@ public class FileProcessingService implements FileProcessingInterface {
         return filePath.substring(filePath.lastIndexOf('/') + 1);
     }
 
-    @Override
     public void finalizeFileProcessing(String fileName) throws IOException {
-        String filePath = errorDirectoryPath + "/" + fileName;
-        ftpReadService.moveFile(ftpServer, ftpUser, ftpPassword, ftpPort, filePath, successDirectoryPath);
+        // Assuming errorDirectoryPath and successDirectoryPath are defined in FTPReadWriteService
+        String sourceFilePath = FTPReadWriteService.ERROR_DIRECTORY_PATH + "/" + fileName;
+        String destinationFilePath = FTPReadWriteService.SUCCESS_DIRECTORY_PATH + "/" + fileName;
+    
+        ftpReadService.moveFile(sourceFilePath, destinationFilePath);
     }
 
     @Override
     public void createLog(String logContents) throws IOException {
-        String fileName = logContents.substring(0, logContents.indexOf("{"));
-        logContents = logContents.substring(logContents.indexOf("{"));
-        // String filePath = errorDirectoryPath + "/" + fileName;
-        FTPReadWriteService.uploadLogFile(ftpServer, ftpUser, ftpPassword, ftpPort, errorDirectoryPath, fileName,
-                logContents);
+        String logFileName = createLogFileName();
+        ftpReadService.uploadLogFile(logFileName, logContents);
     }
 
 }

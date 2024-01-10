@@ -32,10 +32,10 @@ public class CreateOutboundDeliveryController {
         return "File Deleted";
     }
 
-    @PostMapping(path = "/createLog")
-    public String CreateLog(String logContents) throws IOException {
+    @PostMapping(path = "/createLog", consumes = "text/plain")
+    public String CreateLog(@RequestBody String logContents) throws IOException {
         itemProcessingService.createLog(logContents);
-        return "File Deleted";
+        return "Log Created";
     }
 
 }

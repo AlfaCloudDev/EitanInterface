@@ -3,7 +3,7 @@ package com.eitanmedical.app.bydimporter.boundries;
 import java.util.Date;
 import java.util.List;
 
-public class LogFileDto {
+public class OutBoundDeliveryBTPLogFileDto {
     private LogHeaderDto header;
     private List<FileLogEntryDto> fileLogEntries;
 
