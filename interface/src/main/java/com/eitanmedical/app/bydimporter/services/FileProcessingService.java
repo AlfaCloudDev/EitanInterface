@@ -133,7 +133,7 @@ public class FileProcessingService implements FileProcessingInterface {
     @Override
     public void finalizeFileProcessing(String fileName) throws IOException {
         String filePath = errorDirectoryPath + "/" + fileName;
-        ftpReadService.deleteFile(ftpServer, ftpUser, ftpPassword, ftpPort, filePath);
+        ftpReadService.moveFile(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath,filePath);
     }
 
     // Helper method to extract the filename from the file path
