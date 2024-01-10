@@ -48,13 +48,13 @@ public class FTPReadWriteService {
                 if (!file.isFile()) {
                     continue;
                 }
-            
+        
                 String originalFilePath = directoryPath + "/" + file.getName();
                 String errorFilePath = errorDirectoryPath + "/" + file.getName();
-            
-                // Attempt to move the file to the error directory
-                boolean isRenamed = ftpClient.rename(originalFilePath, errorFilePath);
-                if (!isRenamed) {
+        
+                // Use moveFile method to move the file
+                boolean isMoved = moveFile(server, user, password, port, originalFilePath, errorFilePath);
+                if (!isMoved) {
                     System.out.println("Failed to move file. FTP Server Reply: " + ftpClient.getReplyString());
                     continue; // Skip processing this file
                 }
@@ -74,18 +74,15 @@ public class FTPReadWriteService {
         return fileContents;
     }
 
-    public void deleteFile(String server, String user, String password, int port, String filePath) throws IOException {
+    public boolean moveFile(String server, String user, String password, int port, String sourceFilePath, String destinationFilePath) throws IOException {
         FTPClient ftpClient = new FTPClient();
         try {
             ftpClient.connect(server, port);
             ftpClient.login(user, password);
             ftpClient.enterLocalPassiveMode();
-    
-            boolean deleted = ftpClient.deleteFile(filePath);
-    
-            if (!deleted) {
-                System.out.println("Failed to delete file. FTP Server Reply: " + ftpClient.getReplyString());
-            }
+            
+            // Attempt to move the file
+            return ftpClient.rename(sourceFilePath, destinationFilePath);
         } finally {
             if (ftpClient.isConnected()) {
                 ftpClient.disconnect();
@@ -94,30 +91,41 @@ public class FTPReadWriteService {
     }
 
     // Method to upload log file
-    public static void uploadLogFile(String server, String user, String password, int port, String directoryPath, String logFileName, String logContent) throws IOException {
-        FTPClient ftpClient = new FTPClient();
-        try {
-            ftpClient.connect(server, port);
-            ftpClient.login(user, password);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.changeWorkingDirectory(directoryPath);
+    public static void uploadLogFile(String server, String user, String password, int port, 
+                                 String directoryPath, String logFileName, String logContent) {
+    FTPClient ftpClient = new FTPClient();
+    try {
+        ftpClient.connect(server, port);
+        ftpClient.login(user, password);
+        ftpClient.enterLocalPassiveMode();
+        ftpClient.changeWorkingDirectory(directoryPath);
+        System.out.println("directoryPath: " + directoryPath);
+        System.out.println("logFileName: " + logFileName);
 
-            // Convert logContent String to InputStream
-            InputStream inputStream = new ByteArrayInputStream(logContent.getBytes(StandardCharsets.UTF_8));
+        // Convert logContent String to InputStream
+        InputStream inputStream = new ByteArrayInputStream(logContent.getBytes(StandardCharsets.UTF_8));
 
-            // Upload file
-            boolean uploaded = ftpClient.storeFile(logFileName, inputStream);
-            inputStream.close();
+        // Upload file
+        boolean uploaded = ftpClient.storeFile(logFileName, inputStream);
+        inputStream.close();
 
-            if (!uploaded) {
-                System.out.println("Failed to upload log file. FTP Server Reply: " + ftpClient.getReplyString());
-            }else{
-                System.out.println("success " + ftpClient.getReplyString());
-            }
-        } finally {
-            if (ftpClient.isConnected()) {
+        if (!uploaded) {
+            System.out.println("Failed to upload log file. FTP Server Reply: " + ftpClient.getReplyString());
+        } else {
+            System.out.println("Success. FTP Server Reply: " + ftpClient.getReplyString());
+        }
+    } catch (IOException ex) {
+        System.err.println("Error during FTP operation: " + ex.getMessage());
+        // Optionally log the stack trace or additional details
+    } finally {
+        if (ftpClient.isConnected()) {
+            try {
+                ftpClient.logout();
                 ftpClient.disconnect();
+            } catch (IOException ex) {
+                System.err.println("Error disconnecting FTP client: " + ex.getMessage());
             }
         }
     }
+}
 }

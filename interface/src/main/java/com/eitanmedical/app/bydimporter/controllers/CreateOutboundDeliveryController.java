@@ -31,4 +31,11 @@ public class CreateOutboundDeliveryController {
         itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName());
         return "File Deleted";
     }
+
+    @PostMapping(path = "/createLog")
+    public String CreateLog(String logContents) throws IOException {
+        itemProcessingService.createLog(logContents);
+        return "File Deleted";
+    }
+
 }
