@@ -25,6 +25,8 @@ public class OutgoingDeliveryProposal {
     private String accountID;
     @JsonProperty("AccountName")
     private String accountName;
+    @JsonProperty("CustomerInformation")
+    private String customerInformation;
     @JsonProperty("Item")
     private List<OutgoingDeliveryProposalItem> items;
     
@@ -147,6 +149,16 @@ public class OutgoingDeliveryProposal {
         this.accountName = accountName;
     }
 
+    public String getCustomerInformation() {
+        return customerInformation;
+    }
+
+
+
+    public void setCustomerInformation(String customerInformation) {
+        this.customerInformation = customerInformation;
+    }
+
 
     public List<OutgoingDeliveryProposalItem> getItems() {
         return items;
@@ -164,9 +176,16 @@ public class OutgoingDeliveryProposal {
                 + externalReference + ", uniqueRequestID=" + uniqueRequestID + ", shippingMethod=" + shippingMethod
                 + ", customerFreightPayment=" + customerFreightPayment + ", shipFromSite=" + shipFromSite
                 + ", shipFromLocation=" + shipFromLocation + ", accountID=" + accountID + ", accountName=" + accountName
-                + ", items=" + items + "]";
+                + ", customerInformation=" + customerInformation + ", items=" + items + "]";
     }
 
+    
+
+
+
+
+
+   
 
     
 
