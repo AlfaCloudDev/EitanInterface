@@ -9,10 +9,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.eitanmedical.app.bydimporter.boundries.OutBoundDeliveryBTPLogFileDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 @Service
 public class FileProcessingService implements FileProcessingInterface {
@@ -23,19 +30,8 @@ public class FileProcessingService implements FileProcessingInterface {
     private ByDODataService byDODataService;
 
     private final ObjectMapper objectMapper;
-
-    @Value("${EITAN_INTERFACE_FTP_PASSWORD:rhcl1234}")
-    private String ftpPassword;
-    @Value("${EITAN_INTERFACE_FTP_USERNAME:rhcleitan}")
-    private String ftpUser;
-    @Value("${EITAN_INTERFACE_FTP_SERVER:ftp.drivehq.com}")
-    private String ftpServer;
-    @Value("${EITAN_INTERFACE_FTP_PORT:21}")
-    private int ftpPort;
-
-    private final String ftpDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";
-    private final String errorDirectoryPath = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Error";
-
+    
+    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection";
 
     public FileProcessingService() {
         this.objectMapper = new ObjectMapper();
@@ -45,13 +41,22 @@ public class FileProcessingService implements FileProcessingInterface {
     @Override
     public String processAllFilesAndSendToByD() throws IOException {
         List<String> byDResponses = new ArrayList<>();
-        List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles(ftpServer, ftpUser, ftpPassword, ftpPort, ftpDirectoryPath, errorDirectoryPath);
+        List<FTPReadWriteService.FileContent> fileContents = ftpReadService.readAllFiles();
+
+        OutBoundDeliveryBTPLogFileDto logFile = new OutBoundDeliveryBTPLogFileDto();
+        logFile.setHeader(new OutBoundDeliveryBTPLogFileDto.LogHeaderDto(new Date()));
+        List<OutBoundDeliveryBTPLogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
 
         for (FTPReadWriteService.FileContent fileContent : fileContents) {
             OutboundFTPFileDto ftpFileDto = objectMapper.readValue(fileContent.getContent(), OutboundFTPFileDto.class);
-
-            if (!FileValidationService.isValidFile(ftpFileDto)) {
-                System.out.println(":Invalid File:");
+            List<String> validationErrors = FileValidationService.getValidationErrors(ftpFileDto);
+        
+            if (!validationErrors.isEmpty()) {
+                OutBoundDeliveryBTPLogFileDto.FileLogEntryDto fileLogEntry = new OutBoundDeliveryBTPLogFileDto.FileLogEntryDto();
+                String fileNameOnly = extractFileName(fileContent.getFilePath());
+                fileLogEntry.setFileName(fileNameOnly);
+                fileLogEntry.setErrorMessages(validationErrors);
+                fileLogEntries.add(fileLogEntry);
                 continue;
             }
 
@@ -61,47 +66,72 @@ public class FileProcessingService implements FileProcessingInterface {
             outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
             outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
 
-                List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems().stream().map(item -> {
-                    OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
-                    creationItem.setLineItem(item.getLineItem());
-                    creationItem.setProductID(item.getProductID());
-                    creationItem.setActualQuantity(item.getQuantity().toString());
-                    creationItem.setIdentifiedStock(item.getLotCode());
+            List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems()
+                    .stream().map(item -> {
+                        OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
+                        creationItem.setLineItem(item.getLineItem());
+                        creationItem.setProductID(item.getProductID());
+                        creationItem.setActualQuantity(item.getQuantity().toString());
+                        creationItem.setIdentifiedStock(item.getLotCode());
 
+                        List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = Optional
+                                .ofNullable(item.getSerialNumbers())
+                                .orElseGet(Collections::emptyList)
+                                .stream()
+                                .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
+                                        serialNumberDto.getSerialNumber(),
+                                        serialNumberDto.getLotCode()))
+                                .collect(Collectors.toList());
 
-                     List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
-                    Optional.ofNullable(item.getSerialNumbers())
-                        .orElseGet(Collections::emptyList)
-                        .stream()
-                        .map(serialNumberDto -> 
-                             new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
-                                 serialNumberDto.getSerialNumber(), 
-                                 serialNumberDto.getLotCode() 
-                             ))
-                        .collect(Collectors.toList());
-            
-                    creationItem.setOutboundDeliveryCreationSerials(serials);
-                    return creationItem;
-                }).collect(Collectors.toList());
+                        creationItem.setOutboundDeliveryCreationSerials(serials);
+                        return creationItem;
+                    }).collect(Collectors.toList());
 
-                outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
-                String postBody = objectMapper.writeValueAsString(outboundDelivery);
-                String byDResponse = byDODataService.sendPostRequestToByD("https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection", postBody);
+            outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
+            String postBody = objectMapper.writeValueAsString(outboundDelivery);
+            String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody);
 
-                byDResponses.add(byDResponse);
-            }
-
-            return String.join("\n", byDResponses);
+            byDResponses.add(byDResponse);
         }
 
-    @Override
-    public void finalizeFileProcessing(String fileName) throws IOException {
-        String filePath = errorDirectoryPath + "/" + fileName;
-        ftpReadService.deleteFile(ftpServer, ftpUser, ftpPassword, ftpPort, filePath);
+        logFile.setFileLogEntries(fileLogEntries);
+
+        if (!fileLogEntries.isEmpty()) {
+            String logFileName = createLogFileName();
+            String logContent = convertLogToFileToJson(logFile);
+            ftpReadService.uploadLogFile(logFileName, logContent); // Call on the instance
+        }
+
+        return String.join("\n", byDResponses);
     }
 
-    // Helper method to extract the filename from the file path
+    private String convertLogToFileToJson(OutBoundDeliveryBTPLogFileDto logFile) throws JsonProcessingException {
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logFile);
+    }
+
+    private String createLogFileName() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HHmmss");
+        String timestamp = LocalDateTime.now(ZoneId.of("UTC")).format(dtf);
+        System.out.println("timestamp: " + timestamp);
+        return "LogFile_" + timestamp + ".json";
+    }
+
     private String extractFileName(String filePath) {
         return filePath.substring(filePath.lastIndexOf('/') + 1);
     }
+
+    public void finalizeFileProcessing(String fileName) throws IOException {
+        // Assuming errorDirectoryPath and successDirectoryPath are defined in FTPReadWriteService
+        String sourceFilePath = FTPReadWriteService.ERROR_DIRECTORY_PATH + "/" + fileName;
+        String destinationFilePath = FTPReadWriteService.SUCCESS_DIRECTORY_PATH + "/" + fileName;
+    
+        ftpReadService.moveFile(sourceFilePath, destinationFilePath);
+    }
+
+    @Override
+    public void createLog(String logContents) throws IOException {
+        String logFileName = createLogFileName();
+        ftpReadService.uploadLogFile(logFileName, logContents);
+    }
+
 }
