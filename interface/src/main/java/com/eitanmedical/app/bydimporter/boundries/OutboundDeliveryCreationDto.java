@@ -1,8 +1,6 @@
 package com.eitanmedical.app.bydimporter.boundries;
 
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OutboundDeliveryCreationDto {
@@ -13,7 +11,7 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("ShipFromSite")
     private String shipFromSite;
 
-    @JsonProperty("FTPFileName") // Adjust the property name as needed to match ByD's expected field name
+    @JsonProperty("FTPFileName") 
     private String fileName;
 
     @JsonProperty("OutboundDeliveryCreationItem")
@@ -22,12 +20,16 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("UniqueRequestID")
     private String uniquRequestID;
 
+    @JsonProperty("trackingNumber")
+    private String trackingNumber;
+    
     // Constructors
     public OutboundDeliveryCreationDto() {}
 
-    public OutboundDeliveryCreationDto(String salesOrderID, String shipFromSite, List<OutboundDeliveryCreationItem> items) {
+    public OutboundDeliveryCreationDto(String salesOrderID, String shipFromSite, String trackingNumber, List<OutboundDeliveryCreationItem> items) {
         this.salesOrderID = salesOrderID;
         this.shipFromSite = shipFromSite;
+        this.trackingNumber = trackingNumber;
         this.outboundDeliveryCreationItems = items;
     }
 
@@ -39,8 +41,7 @@ public class OutboundDeliveryCreationDto {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
-
+    
     public String getSalesOrderID() {
         return salesOrderID;
     }
@@ -72,6 +73,15 @@ public class OutboundDeliveryCreationDto {
     public void setUniquRequestID(String uniquRequestID) {
         this.uniquRequestID = uniquRequestID;
     }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
+    
 
     // Inner class OutboundDeliveryCreationItem
     public static class OutboundDeliveryCreationItem {
@@ -182,4 +192,5 @@ public class OutboundDeliveryCreationDto {
 
 
     }
+
 }

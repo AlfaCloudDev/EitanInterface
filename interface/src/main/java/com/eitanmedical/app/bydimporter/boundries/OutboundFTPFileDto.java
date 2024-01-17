@@ -16,8 +16,10 @@ public class OutboundFTPFileDto {
     @JsonProperty("UniqueRequestID")
     private String uniqueRequestID;
 
+    @JsonProperty("TrackingNumbers")
+    private String trackingNumbers;
+    
     //GETTERS SETTERS
-
     public String getReference() {
         return reference;
     }
@@ -45,6 +47,15 @@ public class OutboundFTPFileDto {
     public void setUniqueRequestID(String uniqueRequestID) {
         this.uniqueRequestID = uniqueRequestID;
     }
+
+    public String getTrackingNumbers() {
+        return trackingNumbers;
+    }
+
+    public void setTrackingNumbers(String trackingNumbers) {
+        this.trackingNumbers = trackingNumbers;
+    }
+
 
     public static class ItemData {
         @JsonProperty("ProductID")
