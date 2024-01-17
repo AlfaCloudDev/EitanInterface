@@ -20,7 +20,7 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("UniqueRequestID")
     private String uniquRequestID;
 
-    @JsonProperty("TrackingNumbers")
+    @JsonProperty("trackingNumber")
     private String trackingNumber;
     
     // Constructors
