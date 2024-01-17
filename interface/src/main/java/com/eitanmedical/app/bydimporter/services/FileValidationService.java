@@ -12,6 +12,9 @@ public class FileValidationService {
         if (fileDto.getReference() == null || fileDto.getReference().isEmpty()) {
             errors.add("Reference is missing in file");
         }
+        if (fileDto.getTrackingNumbers() == null || fileDto.getTrackingNumbers().isEmpty()) {
+            errors.add("Tracking number is missing in file");
+        }
         if (fileDto.getItems() == null || fileDto.getItems().isEmpty()) {
             errors.add("Items are missing in file");
         } else {

@@ -5,11 +5,9 @@ import com.eitanmedical.app.bydimporter.boundries.OutboundDeliveryCreationDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +62,8 @@ public class FileProcessingService implements FileProcessingInterface {
             outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
             outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
             outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
-            outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); // Set the filename
+            outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
+            outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); 
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems()
                     .stream().map(item -> {
@@ -109,12 +108,6 @@ public class FileProcessingService implements FileProcessingInterface {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logFile);
     }
 
-    private String createLogFileName() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HHmmss");
-        String timestamp = LocalDateTime.now(ZoneId.of("UTC")).format(dtf);
-        System.out.println("timestamp: " + timestamp);
-        return "LogFile_" + timestamp + ".json";
-    }
 
     private String extractFileName(String filePath) {
         return filePath.substring(filePath.lastIndexOf('/') + 1);
@@ -132,6 +125,13 @@ public class FileProcessingService implements FileProcessingInterface {
     public void createLog(String logContents) throws IOException {
         String logFileName = createLogFileName();
         ftpReadService.uploadLogFile(logFileName, logContents);
+    }
+
+    private String createLogFileName() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HHmmss");
+        String timestamp = LocalDateTime.now(ZoneId.of("UTC")).format(dtf);
+        System.out.println("timestamp: " + timestamp);
+        return "LogFile_" + timestamp + ".json";
     }
 
 }
