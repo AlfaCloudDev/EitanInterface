@@ -62,7 +62,7 @@ public class FileProcessingService implements FileProcessingInterface {
             outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
             outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
             outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
-            //outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
+            outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
             outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); 
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems()
@@ -87,6 +87,7 @@ public class FileProcessingService implements FileProcessingInterface {
 
             outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
             String postBody = objectMapper.writeValueAsString(outboundDelivery);
+            System.out.println("postBody:" + postBody);
             String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody);
 
             byDResponses.add(byDResponse);
