@@ -62,29 +62,28 @@ public class FileProcessingService implements FileProcessingInterface {
             outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
             outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
             outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
-            outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
+            //outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
             outboundDelivery.setFileName(extractFileName(fileContent.getFilePath())); 
 
             List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = ftpFileDto.getItems()
-                    .stream().map(item -> {
-                        OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
-                        creationItem.setLineItem(item.getLineItem());
-                        creationItem.setProductID(item.getProductID());
-                        creationItem.setActualQuantity(item.getQuantity().toString());
-                        creationItem.setIdentifiedStock(item.getLotCode());
+                .stream().map(item -> {
+                    OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
+                    creationItem.setLineItem(item.getLineItem());
+                    creationItem.setProductID(item.getProductID());
+                    creationItem.setActualQuantity(item.getQuantity().toString());
+                    creationItem.setIdentifiedStock(item.getLotCode());
 
-                        List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = Optional
-                                .ofNullable(item.getSerialNumbers())
-                                .orElseGet(Collections::emptyList)
-                                .stream()
-                                .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
-                                        serialNumberDto.getSerialNumber(),
-                                        serialNumberDto.getLotCode()))
-                                .collect(Collectors.toList());
+                    List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = Optional
+                            .ofNullable(item.getSerialNumbers())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
+                            .map(serialNumberDto -> new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(
+                                    serialNumberDto.getSerialNumber()))
+                            .collect(Collectors.toList());
 
-                        creationItem.setOutboundDeliveryCreationSerials(serials);
-                        return creationItem;
-                    }).collect(Collectors.toList());
+                    creationItem.setOutboundDeliveryCreationSerials(serials);
+                    return creationItem;
+                }).collect(Collectors.toList());
 
             outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
             String postBody = objectMapper.writeValueAsString(outboundDelivery);

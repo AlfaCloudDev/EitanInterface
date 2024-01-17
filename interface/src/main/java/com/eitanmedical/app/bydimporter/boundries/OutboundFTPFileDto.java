@@ -123,9 +123,6 @@ public class OutboundFTPFileDto {
         @JsonProperty("SerialNumber")
         private String serialNumber;
 
-        @JsonProperty("lotCode")
-        private String lotCode;
-
         //GETTERS SETTERS
         
         public String getSerialNumber() {
@@ -136,13 +133,6 @@ public class OutboundFTPFileDto {
             this.serialNumber = serialNumber;
         }
 
-        public String getLotCode() { 
-            return lotCode;
-        }
-    
-        public void setLotCode(String lotCode) { 
-            this.lotCode = lotCode;
-        }
     }
 
     public List<ItemData> getItems() {

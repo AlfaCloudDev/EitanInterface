@@ -160,15 +160,11 @@ public class OutboundDeliveryCreationDto {
         @JsonProperty("SerialID")
         private String serialID;
 
-        @JsonProperty("SerialIdentifiedStock")
-        private String serialIdentifiedStock;
-
         // Constructors
         public OutboundDeliveryCreationSerial() {}
 
-        public OutboundDeliveryCreationSerial(String serialID, String serialIdentifiedStock) {
+        public OutboundDeliveryCreationSerial(String serialID) {
             this.serialID = serialID;
-            this.serialIdentifiedStock = serialIdentifiedStock;
         }
 
         // Getters and Setters
@@ -179,17 +175,6 @@ public class OutboundDeliveryCreationDto {
         public void setSerialID(String serialID) {
             this.serialID = serialID;
         }
-
-        public String getSerialIdentifiedStock() {
-            return serialIdentifiedStock;
-        }
-
-        public void setSerialIdentifiedStock(String serialIdentifiedStock) {
-            this.serialIdentifiedStock = serialIdentifiedStock;
-        }
-
-
-
 
     }
 
