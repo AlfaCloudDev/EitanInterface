@@ -19,6 +19,9 @@ public class OutboundFTPFileDto {
     @JsonProperty("TrackingNumbers")
     private String trackingNumbers;
     
+    @JsonProperty("InternalComment")
+    private String internalComment;
+    
     //GETTERS SETTERS
     public String getReference() {
         return reference;
@@ -54,6 +57,14 @@ public class OutboundFTPFileDto {
 
     public void setTrackingNumbers(String trackingNumbers) {
         this.trackingNumbers = trackingNumbers;
+    }
+
+    public String getInternalComment() {
+        return internalComment;
+    }
+
+    public void setInternalComment(String internalComment) {
+        this.internalComment = internalComment;
     }
 
 

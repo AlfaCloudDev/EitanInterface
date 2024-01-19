@@ -23,6 +23,9 @@ public class OutboundDeliveryCreationDto {
     @JsonProperty("trackingNumber")
     private String trackingNumber;
     
+    @JsonProperty("internalComment")
+    private String internalComment;
+    
     // Constructors
     public OutboundDeliveryCreationDto() {}
 
@@ -82,6 +85,13 @@ public class OutboundDeliveryCreationDto {
         this.trackingNumber = trackingNumber;
     }
     
+    public String getInternalComment() {
+        return internalComment;
+    }
+
+    public void setInternalComment(String internalComment) {
+        this.internalComment = internalComment;
+    }
 
     // Inner class OutboundDeliveryCreationItem
     public static class OutboundDeliveryCreationItem {
@@ -177,5 +187,7 @@ public class OutboundDeliveryCreationDto {
         }
 
     }
+
+
 
 }
