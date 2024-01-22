@@ -7,17 +7,29 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Base64;
 
 @Service
-public class ByDODataService {
+public class BYDODataService {
 
-    private final String authHeader = "Basic X29kYXRhOldlbGNvbWUxMjM="; 
+    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_USER:}")
+    private String username; 
+
+    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_PASSWORD:}")
+    private String password; 
+
+    private String getAuthHeader() {
+        String auth = username + ":" + password;
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
+        return "Basic " + new String(encodedAuth);
+    }
 
     public String sendPostRequestToByD(String uri, String postBody) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", authHeader);
+        headers.set("Authorization", getAuthHeader());
 
         HttpEntity<String> request = new HttpEntity<>(postBody, headers);
         return restTemplate.postForObject(uri, request, String.class);
@@ -26,7 +38,7 @@ public class ByDODataService {
     public String sendGetRequestToByD(String uri) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authHeader);
+        headers.set("Authorization", getAuthHeader());
     
         ResponseEntity<String> response = restTemplate.exchange(
             uri, 
