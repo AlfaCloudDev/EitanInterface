@@ -25,7 +25,7 @@ public class FileProcessingService implements FileProcessingInterface {
     private FTPReadWriteService ftpReadService;
 
     @Autowired
-    private ByDODataService byDODataService;
+    private BYDODataService byDODataService;
 
     private final ObjectMapper objectMapper;
     
