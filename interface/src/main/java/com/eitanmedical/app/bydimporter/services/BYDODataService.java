@@ -13,10 +13,10 @@ import java.util.Base64;
 @Service
 public class BYDODataService {
 
-    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_USER:}")
+    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_USER:_odata}")
     private String username; 
 
-    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_PASSWORD:}")
+    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_PASSWORD:Welcome123}")
     private String password; 
 
     private String getAuthHeader() {
