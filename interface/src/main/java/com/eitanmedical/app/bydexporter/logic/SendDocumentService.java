@@ -64,7 +64,7 @@ public class SendDocumentService implements SendDocumentInterface{
 
     private ResponseEntity<Map<String, Object>> sendDocument (Object obj, String path){
         String returnValue = "";
-
+        Map<String, Object> responseMap = new HashMap<>();
         FTPClient ftpClient = new FTPClient();
 
 	    try {
@@ -99,7 +99,9 @@ public class SendDocumentService implements SendDocumentInterface{
             if (success) {
                 returnValue = "File " + remoteFile + " Uploaded successfully";
             } else {
-                returnValue = "Failed to upload file";
+                returnValue = "Failed to upload file to the FTP";
+                responseMap.put("Message", returnValue);
+                return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
             }
 	
 		} catch (IOException e) {
@@ -112,7 +114,6 @@ public class SendDocumentService implements SendDocumentInterface{
 				e.printStackTrace();
 			}
 		}
-        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("Message", returnValue);
         return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
     }
