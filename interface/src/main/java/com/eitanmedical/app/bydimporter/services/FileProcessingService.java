@@ -29,7 +29,7 @@ public class FileProcessingService implements FileProcessingInterface {
 
     private final ObjectMapper objectMapper;
     
-    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/outboundtest/OutboundDeliveryCreationRootCollection";
+    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/interface_outbounddelivery/OutboundDeliveryCreationRootCollection";
 
     public FileProcessingService() {
         this.objectMapper = new ObjectMapper();

@@ -28,9 +28,9 @@ public class FTPReadWriteService {
     @Value("${EITAN_INTERFACE_FTP_PORT:21}")
     private int ftpPort;
 
-    static final String SUCCESS_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Success";
-    static final String ERROR_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Error";
-    private static final String FTP_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Eitan_SAP/Test/OUT/DeliveryNote/Input";
+    static final String SUCCESS_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Success";
+    static final String ERROR_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Error";
+    private static final String FTP_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Input";
 
     public static class FileContent {
         private final String content;
