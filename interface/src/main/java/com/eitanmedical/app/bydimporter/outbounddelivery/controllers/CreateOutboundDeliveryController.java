@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.controllers;
+package com.eitanmedical.app.bydimporter.outbounddelivery.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 
-import com.eitanmedical.app.bydimporter.boundries.OutBoundFileNamePostBYDDto;
-import com.eitanmedical.app.bydimporter.services.FileProcessingInterface;
+import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundFileNamePostBYDDto;
+import com.eitanmedical.app.bydimporter.outbounddelivery.services.FileProcessingInterface;
 
 import java.io.IOException;
 

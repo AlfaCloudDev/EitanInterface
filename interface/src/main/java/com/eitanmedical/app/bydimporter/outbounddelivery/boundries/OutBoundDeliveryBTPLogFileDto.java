@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.boundries;
+package com.eitanmedical.app.bydimporter.outbounddelivery.boundries;
 
 import java.util.Date;
 import java.util.List;

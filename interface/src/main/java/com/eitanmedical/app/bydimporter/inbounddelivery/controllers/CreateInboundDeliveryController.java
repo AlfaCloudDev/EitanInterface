@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.controllers;
+package com.eitanmedical.app.bydimporter.inbounddelivery.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

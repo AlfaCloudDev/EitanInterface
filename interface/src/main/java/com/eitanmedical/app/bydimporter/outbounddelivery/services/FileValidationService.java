@@ -1,6 +1,6 @@
-package com.eitanmedical.app.bydimporter.services;
+package com.eitanmedical.app.bydimporter.outbounddelivery.services;
 
-import com.eitanmedical.app.bydimporter.boundries.OutboundFTPFileDto;
+import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundFTPFileDto;
 import java.util.ArrayList;
 import java.util.List;
 

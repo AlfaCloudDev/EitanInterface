@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.boundries;
+package com.eitanmedical.app.bydimporter.outbounddelivery.boundries;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
