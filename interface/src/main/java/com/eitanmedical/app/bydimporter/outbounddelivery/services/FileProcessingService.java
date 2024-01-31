@@ -3,6 +3,7 @@ package com.eitanmedical.app.bydimporter.outbounddelivery.services;
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundFTPFileDto;
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundDeliveryCreationDto;
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundDeliveryBTPLogFileDto;
+import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundFileNamePostBYDDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -132,11 +133,19 @@ public class FileProcessingService implements FileProcessingInterface {
         return "LogFile_" + timestamp + ".json";
     }
 
-    public void finalizeFileProcessing(String fileName) throws IOException {
-        String sourceFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
-        String destinationFilePath = SUCCESS_DIRECTORY_PATH + "/" + fileName;
-        ftpFileMover.moveFile(sourceFilePath, destinationFilePath);
+    
+    public void finalizeFileProcessing(String fileName, OutBoundFileNamePostBYDDto.FileDestination destination) throws IOException {
+    String sourceFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
+    String destinationFilePath;
+
+    if (destination == OutBoundFileNamePostBYDDto.FileDestination.SUCCESS) {
+        destinationFilePath = SUCCESS_DIRECTORY_PATH + "/" + fileName;
+    } else {
+        destinationFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
     }
+
+    ftpFileMover.moveFile(sourceFilePath, destinationFilePath);
+}
 
     @Override
     public void createLog(String logContents) throws IOException {

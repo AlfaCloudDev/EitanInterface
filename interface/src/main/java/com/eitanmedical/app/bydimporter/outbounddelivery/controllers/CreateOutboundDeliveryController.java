@@ -27,13 +27,13 @@ public class CreateOutboundDeliveryController {
     }
 
     @PostMapping(path = "/PostProcessFiles")
-    public String PostProcessFiles(@RequestBody OutBoundFileNamePostBYDDto fileNameDto) throws IOException {
-        itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName());
-        return "File Deleted";
+    public String postProcessFiles(@RequestBody OutBoundFileNamePostBYDDto fileNameDto) throws IOException {
+        itemProcessingService.finalizeFileProcessing(fileNameDto.getFileName(), fileNameDto.getDestination());
+        return "File Processed";
     }
 
     @PostMapping(path = "/createLog", consumes = "text/plain")
-    public String CreateLog(@RequestBody String logContents) throws IOException {
+    public String createLog(@RequestBody String logContents) throws IOException {
         itemProcessingService.createLog(logContents);
         return "Log Created";
     }
