@@ -13,7 +13,7 @@ import java.util.Base64;
 @Service
 public class BYDODataService {
 
-    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_USER:_odata}")
+    @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_USER:_DATEX}")
     private String username; 
 
     @Value("${EITAN_INTERFACE_OUTBOUND_ODATA_PASSWORD:Welcome123}")
