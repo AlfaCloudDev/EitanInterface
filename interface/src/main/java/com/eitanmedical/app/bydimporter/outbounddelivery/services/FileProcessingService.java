@@ -54,14 +54,14 @@ public class FileProcessingService implements FileProcessingInterface {
         for (FtpFileReader.FileContentAndPath fileContentAndPath : fileContentsAndPaths) {
             String content = fileContentAndPath.getContent();
             String fileName = fileContentAndPath.getFileName();
-            String originalFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
-            String errorFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
+            // String originalFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
+            // String errorFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
         
-            boolean isMoved = ftpFileMover.moveFile(originalFilePath, errorFilePath);
-            if (!isMoved) {
-                System.out.println("Failed to move file: " + fileName);
-                continue;
-            }
+            // boolean isMoved = ftpFileMover.moveFile(originalFilePath, errorFilePath);
+            // if (!isMoved) {
+            //     System.out.println("Failed to move file: " + fileName);
+            //     continue;
+            // }
         
             // Process the file content after moving it to the error directory
             OutboundFTPFileDto ftpFileDto = objectMapper.readValue(content, OutboundFTPFileDto.class);

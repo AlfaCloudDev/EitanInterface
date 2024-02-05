@@ -8,6 +8,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
+
+
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import java.util.Base64;
 
 @Service
@@ -30,9 +35,19 @@ public class BYDODataService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", getAuthHeader());
-
+        
         HttpEntity<String> request = new HttpEntity<>(postBody, headers);
-        return restTemplate.postForObject(uri, request, String.class);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            // This catches client and server errors and returns the response body directly
+            return "Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+        } catch (RestClientException e) {
+            // This catches other exceptions, like I/O errors
+            return "Error: " + e.getMessage();
+        }
     }
 
     public String sendGetRequestToByD(String uri) {
@@ -40,13 +55,21 @@ public class BYDODataService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthHeader());
     
-        ResponseEntity<String> response = restTemplate.exchange(
-            uri, 
-            HttpMethod.GET, 
-            new HttpEntity<>(headers), 
-            String.class
-        );
-    
-        return response.getBody();
+        try{
+            ResponseEntity<String> response = restTemplate.exchange(
+                uri, 
+                HttpMethod.GET, 
+                new HttpEntity<>(headers), 
+                String.class
+            );
+        
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            // This catches client and server errors and returns the response body directly
+            return "Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+        } catch (RestClientException e) {
+            // This catches other exceptions, like I/O errors
+            return "Error: " + e.getMessage();
+        }
     }
 }
