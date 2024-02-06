@@ -8,8 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
-
-
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
@@ -30,23 +28,27 @@ public class BYDODataService {
         return "Basic " + new String(encodedAuth);
     }
 
-    public String sendPostRequestToByD(String uri, String postBody) {
+    public String sendPostRequestToByD(String uri, String postBody, String fileName) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", getAuthHeader());
-        
+
         HttpEntity<String> request = new HttpEntity<>(postBody, headers);
-        
+
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // This catches client and server errors and returns the response body directly
-            return "Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+            String errorMsg = "Error processing file:" + fileName + ": " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+            System.out.println(errorMsg);
+            e.printStackTrace(); // To log the stack trace for detailed debugging
+            return errorMsg;
         } catch (RestClientException e) {
-            // This catches other exceptions, like I/O errors
-            return "Error: " + e.getMessage();
+            String errorMsg = "Error processing file:" + fileName + ": " + e.getMessage();
+            System.out.println(errorMsg);
+            e.printStackTrace(); // To log the stack trace for detailed debugging
+            return errorMsg;
         }
     }
 
@@ -54,22 +56,26 @@ public class BYDODataService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthHeader());
-    
-        try{
+
+        try {
             ResponseEntity<String> response = restTemplate.exchange(
                 uri, 
                 HttpMethod.GET, 
                 new HttpEntity<>(headers), 
                 String.class
             );
-        
+
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // This catches client and server errors and returns the response body directly
-            return "Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+            String errorMsg = "Error during GET request to " + uri + ": " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+            System.out.println(errorMsg);
+            e.printStackTrace(); 
+            return errorMsg;
         } catch (RestClientException e) {
-            // This catches other exceptions, like I/O errors
-            return "Error: " + e.getMessage();
+            String errorMsg = "Error during GET request to " + uri + ": " + e.getMessage();
+            System.out.println(errorMsg);
+            e.printStackTrace(); 
+            return errorMsg;
         }
     }
 }

@@ -54,14 +54,14 @@ public class FileProcessingService implements FileProcessingInterface {
         for (FtpFileReader.FileContentAndPath fileContentAndPath : fileContentsAndPaths) {
             String content = fileContentAndPath.getContent();
             String fileName = fileContentAndPath.getFileName();
-            // String originalFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
-            // String errorFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
+            String originalFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
+            String errorFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
         
-            // boolean isMoved = ftpFileMover.moveFile(originalFilePath, errorFilePath);
-            // if (!isMoved) {
-            //     System.out.println("Failed to move file: " + fileName);
-            //     continue;
-            // }
+            boolean isMoved = ftpFileMover.moveFile(originalFilePath, errorFilePath);
+            if (!isMoved) {
+                System.out.println("Failed to move file: " + fileName);
+                continue;
+            }
         
             // Process the file content after moving it to the error directory
             OutboundFTPFileDto ftpFileDto = objectMapper.readValue(content, OutboundFTPFileDto.class);
@@ -109,7 +109,7 @@ public class FileProcessingService implements FileProcessingInterface {
             outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
         
             String postBody = objectMapper.writeValueAsString(outboundDelivery);
-            String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody);
+            String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody, fileName);
             byDResponses.add(byDResponse);
         }
         
@@ -119,8 +119,11 @@ public class FileProcessingService implements FileProcessingInterface {
             String logContent = convertLogToFileToJson(logFile);
             ftpFileUploader.uploadFile(ERROR_DIRECTORY_PATH, logFileName, logContent);
         }
-        
-        return String.join("\n", byDResponses);
+        String responseString = "";
+        if (!byDResponses.isEmpty()) {
+            responseString = String.join("\n##\n", byDResponses) + "\n##\n";
+        }
+        return responseString;
     }
 
     private String convertLogToFileToJson(OutBoundDeliveryBTPLogFileDto logFile) throws JsonProcessingException {
@@ -135,14 +138,14 @@ public class FileProcessingService implements FileProcessingInterface {
 
     
     public void finalizeFileProcessing(String fileName, OutBoundFileNamePostBYDDto.FileDestination destination) throws IOException {
-    String sourceFilePath = INPUT_DIRECTORY_PATH + "/" + fileName;
+    String sourceFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
     String destinationFilePath;
 
-    if (destination == OutBoundFileNamePostBYDDto.FileDestination.SUCCESS) {
+    //if (destination == OutBoundFileNamePostBYDDto.FileDestination.SUCCESS) {
         destinationFilePath = SUCCESS_DIRECTORY_PATH + "/" + fileName;
-    } else {
-        destinationFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
-    }
+    // } else {
+    //     destinationFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
+    // }
 
     ftpFileMover.moveFile(sourceFilePath, destinationFilePath);
 }

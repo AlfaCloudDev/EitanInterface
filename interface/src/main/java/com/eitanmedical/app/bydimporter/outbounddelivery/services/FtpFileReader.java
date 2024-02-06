@@ -46,9 +46,14 @@ public class FtpFileReader {
 
             for (FTPFile file : files) {
                 if (file.isFile()) {
+                    System.out.println("filename:" + file.getName());
                     try (InputStream inputStream = ftpClient.retrieveFileStream(file.getName())) {
                         String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
                         fileContentsAndPaths.add(new FileContentAndPath(content, file.getName()));
+                        // Ensure the command is completed successfully
+                        if (!ftpClient.completePendingCommand()) {
+                            System.out.println("Could not complete the pending command. File: " + file.getName());
+                        }
                     }
                 }
             }
