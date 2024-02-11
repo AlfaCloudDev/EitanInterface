@@ -43,14 +43,14 @@ public class SendDocumentService implements SendDocumentInterface{
     @Override
     public ResponseEntity<Map<String, Object>> createAndUploadDeliveryProposal(
             OutgoingDeliveryProposal outgoingDeliveryProposal) {
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/DeliveryProposal/Input/";
+        String path = "drivehqshare/rgwoodfield/Test/IN/DeliveryProposal/Input/";
         return this.sendDocument(outgoingDeliveryProposal, path);
     }
 
     @Override
     public ResponseEntity<Map<String, Object>> createAndUploadGoodsReceiptProposal(
             GoodsReceiptProposal goodsReceiptProposal) {
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/GoodsReceiptProposal/Input/";
+        String path = "drivehqshare/rgwoodfield/Test/IN/GoodsReceiptProposal/Input/";
         return this.sendDocument(goodsReceiptProposal, path);
     }
 
@@ -58,7 +58,7 @@ public class SendDocumentService implements SendDocumentInterface{
     @Override
     public ResponseEntity<Map<String, Object>> createAndUploadInboundDeliveryNote(
             InboundDeliveryNote inboundDeliveryNote) {
-        String path = "drivehqshare/rgwoodfield/Eitan_SAP/Test/IN/InboundDeliveryNote/Input/";
+        String path = "drivehqshare/rgwoodfield/Test/IN/InboundDeliveryNote/Input/";
         return this.sendDocument(inboundDeliveryNote, path);
     }
 
@@ -84,7 +84,7 @@ public class SendDocumentService implements SendDocumentInterface{
             else if (obj instanceof InboundDeliveryNote){
                 InboundDeliveryNote inboundDeliveryNote = (InboundDeliveryNote)obj;
                 json = jackson.writeValueAsString(inboundDeliveryNote);
-                remoteFile += "InboundDeliveryNote" + inboundDeliveryNote.getId() + ".json";
+                remoteFile += "InboundDeliveryNote" + inboundDeliveryNote.getWarehouseRequestID() + ".json";
             }
             InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 			ftpClient.connect(ftpServer, ftpPort);
@@ -94,7 +94,6 @@ public class SendDocumentService implements SendDocumentInterface{
 	
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			//String remoteFile = path + "InboundDeliveryNote" + inboundDeliveryNote.getId() + ".json";
-	
 			boolean success = ftpClient.storeFile(remoteFile, inputStream);
             if (success) {
                 returnValue = "File " + remoteFile + " Uploaded successfully";
@@ -106,6 +105,9 @@ public class SendDocumentService implements SendDocumentInterface{
 	
 		} catch (IOException e) {
 			e.printStackTrace();
+            returnValue = "Failed to connect to FTP";
+            responseMap.put("Message", returnValue);
+            return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
 		} finally {
 			try {
 				// Disconnect from the FTP server

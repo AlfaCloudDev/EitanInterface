@@ -7,18 +7,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class InboundDeliveryNoteItem {
     @JsonProperty("LineItemID")
     private String lineItemID;
-    @JsonProperty("Reference")
-    private String reference;
+    @JsonProperty("PurchaseOrderID")
+    private String purchaseOrderID;
     @JsonProperty("ProductID")
-    private String productId; 
-    @JsonProperty("ProductDescription")
-    private String productDescription;
+    private String productID; 
     @JsonProperty("Quantity")
     private int quantity;
     @JsonProperty("QuantityUOM")
     private String quantityUOM;
     @JsonProperty("SerialNumbers")
-    private List<SerialNumber> serialNumbers;
+    private List<String> serialNumbers;
+    @JsonProperty("IdentificationStockID")
+    private String IdentificationStockID;
 
 
     public InboundDeliveryNoteItem() {
@@ -35,33 +35,23 @@ public class InboundDeliveryNoteItem {
     }
 
 
-    public String getReference() {
-        return reference;
+    public String getPurchaseOrderID() {
+        return purchaseOrderID;
     }
 
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setPurchaseOrderID(String purchaseOrderID) {
+        this.purchaseOrderID = purchaseOrderID;
     }
 
 
-    public String getProductId() {
-        return productId;
+    public String getProductID() {
+        return productID;
     }
 
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-
-    public String getProductDescription() {
-        return productDescription;
-    }
-
-
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
+    public void setProductID(String productID) {
+        this.productID = productID;
     }
 
 
@@ -85,25 +75,36 @@ public class InboundDeliveryNoteItem {
     }
 
 
-    public List<SerialNumber> getSerialNumbers() {
+    public List<String> getSerialNumbers() {
         return serialNumbers;
     }
 
 
-    public void setSerialNumbers(List<SerialNumber> serialNumbers) {
+    public void setSerialNumbers(List<String> serialNumbers) {
         this.serialNumbers = serialNumbers;
     }
 
+
+    public String getIdentificationStockID() {
+        return IdentificationStockID;
+    }
+
+
+    public void setIdentificationStockID(String identificationStockID) {
+        IdentificationStockID = identificationStockID;
+    }
+
+
     @Override
     public String toString() {
-        return "InboundDeliveryNoteItem [lineItemID=" + lineItemID + ", reference=" + reference + ", productId="
-                + productId + ", productDescription=" + productDescription + ", quantity=" + quantity + ", quantityUOM="
-                + quantityUOM + ", SerialNumbers=" + serialNumbers + "]";
+        return "InboundDeliveryNoteItem [lineItemID=" + lineItemID + ", purchaseOrderID=" + purchaseOrderID
+                + ", productID=" + productID + ", quantity=" + quantity + ", quantityUOM=" + quantityUOM
+                + ", serialNumbers=" + serialNumbers + ", IdentificationStockID=" + IdentificationStockID + "]";
     }
 
     
 
-    
 
+    
 }
     

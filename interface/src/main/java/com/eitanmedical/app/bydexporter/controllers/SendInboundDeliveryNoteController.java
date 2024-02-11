@@ -27,7 +27,7 @@ public class SendInboundDeliveryNoteController {
     @PostMapping(path = "/SendInboundDeliveryNote", 
                produces = MediaType.APPLICATION_JSON_VALUE,
                consumes = MediaType.APPLICATION_JSON_VALUE)
-   public ResponseEntity<Map<String, Object>> createGoodsReceiptProposal(Authentication authentication, @RequestBody InboundDeliveryNote inboundDeliveryNote) {
+   public ResponseEntity<Map<String, Object>> createInboundDeliveryNote(Authentication authentication, @RequestBody InboundDeliveryNote inboundDeliveryNote) {
       return this.sendDocumentInterface.createAndUploadInboundDeliveryNote(inboundDeliveryNote);
    }
 }
