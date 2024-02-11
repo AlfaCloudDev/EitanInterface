@@ -11,6 +11,9 @@ public class InboundDeliveryCreationDto {
     @JsonProperty("WarehouseRequestID")
     private String uniquRequestID;
 
+    @JsonProperty("SiteID")
+    private String siteID;
+
     @JsonProperty("InboundDeliveryCreationItem")
     private List<InboundDeliveryCreationItem> InboundDeliveryCreationItems;
     
@@ -44,6 +47,14 @@ public class InboundDeliveryCreationDto {
 
     public void setUniquRequestID(String uniquRequestID) {
         this.uniquRequestID = uniquRequestID;
+    }
+
+    public String getSiteID() {
+        return siteID;
+    }
+
+    public void setSiteID(String siteID) {
+        this.siteID = siteID;
     }
 
     // Inner class InboundDeliveryCreationItem
@@ -139,10 +150,13 @@ public class InboundDeliveryCreationDto {
         private String serialStatus;
 
         // Constructors
-        public InboundDeliveryCreationSerial() {}
+        public InboundDeliveryCreationSerial() {
 
-        public InboundDeliveryCreationSerial(String serialID) {
+        }
+
+        public InboundDeliveryCreationSerial(String serialID, String status) {
             this.serialID = serialID;
+            this.serialStatus = status;
         }
 
         // Getters and Setters

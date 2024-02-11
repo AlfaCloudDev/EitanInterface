@@ -82,6 +82,7 @@ public class FileInboundProcessingService implements FileInboundProcessingInterf
         
             InboundDeliveryCreationDto inboundDelivery = new InboundDeliveryCreationDto();
             inboundDelivery.setUniquRequestID(ftpFileDto.getID());
+            inboundDelivery.setSiteID(ftpFileDto.getSiteID());
             inboundDelivery.setFileName(fileName);
         
             // Process items and serial numbers
@@ -91,16 +92,17 @@ public class FileInboundProcessingService implements FileInboundProcessingInterf
                         new InboundDeliveryCreationDto.InboundDeliveryCreationItem();
                     creationItem.setLineItem(item.getLineItem());
                     creationItem.setProductID(item.getProductID());
+                    creationItem.setItemStatus(item.getStatus());
                     creationItem.setActualQuantity(item.getQuantity().toString());
                     creationItem.setIdentifiedStock(item.getLotCode());
         
                     List<InboundDeliveryCreationDto.InboundDeliveryCreationSerial> serials = 
-                        Optional.ofNullable(item.getSerialNumbers())
-                            .orElseGet(Collections::emptyList)
-                            .stream()
-                            .map(serialNumberDto -> 
-                                new InboundDeliveryCreationDto.InboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
-                            .collect(Collectors.toList());
+                    Optional.ofNullable(item.getSerialNumbers())
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(serialNumberDto -> 
+                            new InboundDeliveryCreationDto.InboundDeliveryCreationSerial(serialNumberDto.getSerialNumber(), serialNumberDto.getStatus()))
+                        .collect(Collectors.toList());
         
                     creationItem.setInboundDeliveryCreationSerials(serials);
                     return creationItem;
