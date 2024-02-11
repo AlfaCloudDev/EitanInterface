@@ -1,13 +1,13 @@
 package com.eitanmedical.app.bydimporter.outbounddelivery.services;
 
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundFTPFileDto;
+import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundFileNamePostBYDDto.FileDestination;
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundDeliveryCreationDto;
 import com.eitanmedical.app.bydimporter.common.services.BYDODataService;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileMover;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileReader;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileUploader;
 import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundDeliveryBTPLogFileDto;
-import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundFileNamePostBYDDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -141,7 +141,7 @@ public class FileProcessingService implements FileProcessingInterface {
     }
 
     
-    public void finalizeFileProcessing(String fileName, OutBoundFileNamePostBYDDto.FileDestination destination) throws IOException {
+    public void finalizeFileProcessing(String fileName, FileDestination fileDestination) throws IOException {
     String sourceFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
     String destinationFilePath;
 

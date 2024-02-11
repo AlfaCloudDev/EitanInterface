@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InBoundFileNamePostBYDDto;
 
-public interface FileProcessingInterface {
+public interface FileInboundProcessingInterface {
     String processAllFilesAndSendToByD() throws IOException;
     void finalizeFileProcessing(String fileName, InBoundFileNamePostBYDDto.FileDestination destination) throws IOException;
     void createLog(String logContents) throws IOException;

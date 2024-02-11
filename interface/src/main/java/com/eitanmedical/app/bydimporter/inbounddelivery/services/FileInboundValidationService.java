@@ -4,7 +4,7 @@ import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InboundFTPFile
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileValidationService {
+public class FileInboundValidationService {
     
     public static List<String> getValidationErrors(InboundFTPFileDto fileDto) {
         List<String> errors = new ArrayList<>();

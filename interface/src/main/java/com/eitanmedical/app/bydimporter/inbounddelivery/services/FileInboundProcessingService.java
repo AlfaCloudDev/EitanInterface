@@ -23,7 +23,7 @@ import java.time.ZoneId;
 
 
 @Service
-public class FileProcessingService implements FileProcessingInterface {
+public class FileInboundProcessingService implements FileInboundProcessingInterface {
     @Autowired
     private FtpFileReader ftpFileReader;
 
@@ -42,7 +42,7 @@ public class FileProcessingService implements FileProcessingInterface {
     private static final String ERROR_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/GoodsReceipt/Error";
     private static final String SUCCESS_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/GoodsReceipt/Success";
 
-    public FileProcessingService() {
+    public FileInboundProcessingService() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -70,7 +70,7 @@ public class FileProcessingService implements FileProcessingInterface {
         
             // Process the file content after moving it to the error directory
             InboundFTPFileDto ftpFileDto = objectMapper.readValue(content, InboundFTPFileDto.class);
-            List<String> validationErrors = FileValidationService.getValidationErrors(ftpFileDto);
+            List<String> validationErrors = FileInboundValidationService.getValidationErrors(ftpFileDto);
         
             if (!validationErrors.isEmpty()) {
                 InBoundDeliveryBTPLogFileDto.FileLogEntryDto fileLogEntry = new InBoundDeliveryBTPLogFileDto.FileLogEntryDto();
