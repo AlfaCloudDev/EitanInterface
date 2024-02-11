@@ -1,9 +1,9 @@
-package com.eitanmedical.app.bydimporter.outbounddelivery.boundries;
+package com.eitanmedical.app.bydimporter.inbounddelivery.boundries;
 
 import java.util.Date;
 import java.util.List;
 
-public class OutBoundDeliveryBTPLogFileDto {
+public class InBoundDeliveryBTPLogFileDto {
     private LogHeaderDto header;
     private List<FileLogEntryDto> fileLogEntries;
 

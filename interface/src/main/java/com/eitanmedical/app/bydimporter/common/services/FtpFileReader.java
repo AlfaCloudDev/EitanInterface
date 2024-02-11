@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.common;
+package com.eitanmedical.app.bydimporter.common.services;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;

@@ -1,13 +1,13 @@
-package com.eitanmedical.app.bydimporter.outbounddelivery.services;
+package com.eitanmedical.app.bydimporter.inbounddelivery.services;
 
-import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundFTPFileDto;
-import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutboundDeliveryCreationDto;
+import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InboundFTPFileDto;
+import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InboundDeliveryCreationDto;
 import com.eitanmedical.app.bydimporter.common.services.BYDODataService;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileMover;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileReader;
 import com.eitanmedical.app.bydimporter.common.services.FtpFileUploader;
-import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundDeliveryBTPLogFileDto;
-import com.eitanmedical.app.bydimporter.outbounddelivery.boundries.OutBoundFileNamePostBYDDto;
+import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InBoundDeliveryBTPLogFileDto;
+import com.eitanmedical.app.bydimporter.inbounddelivery.boundries.InBoundFileNamePostBYDDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
+
 
 @Service
 public class FileProcessingService implements FileProcessingInterface {
@@ -36,10 +37,10 @@ public class FileProcessingService implements FileProcessingInterface {
     private BYDODataService byDODataService;
 
     private final ObjectMapper objectMapper;
-    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/interface_outbounddelivery/OutboundDeliveryCreationRootCollection";
-    private static final String INPUT_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Input";
-    private static final String ERROR_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Error";
-    private static final String SUCCESS_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/DeliveryNote/Success";
+    private final String postDeliveryCreationURL = "https://my353793.sapbydesign.com/sap/byd/odata/cust/v1/interface_outbounddelivery/InboundDeliveryCreationRootCollection";
+    private static final String INPUT_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/GoodsReceipt/Input";
+    private static final String ERROR_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/GoodsReceipt/Error";
+    private static final String SUCCESS_DIRECTORY_PATH = "/drivehqshare/rgwoodfield/Test/OUT/GoodsReceipt/Success";
 
     public FileProcessingService() {
         this.objectMapper = new ObjectMapper();
@@ -51,9 +52,9 @@ public class FileProcessingService implements FileProcessingInterface {
         List<String> byDResponses = new ArrayList<>();
         List<FtpFileReader.FileContentAndPath> fileContentsAndPaths = ftpFileReader.readFiles(INPUT_DIRECTORY_PATH);
 
-        OutBoundDeliveryBTPLogFileDto logFile = new OutBoundDeliveryBTPLogFileDto();
-        logFile.setHeader(new OutBoundDeliveryBTPLogFileDto.LogHeaderDto(new Date()));
-        List<OutBoundDeliveryBTPLogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
+        InBoundDeliveryBTPLogFileDto logFile = new InBoundDeliveryBTPLogFileDto();
+        logFile.setHeader(new InBoundDeliveryBTPLogFileDto.LogHeaderDto(new Date()));
+        List<InBoundDeliveryBTPLogFileDto.FileLogEntryDto> fileLogEntries = new ArrayList<>();
 
         for (FtpFileReader.FileContentAndPath fileContentAndPath : fileContentsAndPaths) {
             String content = fileContentAndPath.getContent();
@@ -68,51 +69,46 @@ public class FileProcessingService implements FileProcessingInterface {
             }
         
             // Process the file content after moving it to the error directory
-            OutboundFTPFileDto ftpFileDto = objectMapper.readValue(content, OutboundFTPFileDto.class);
+            InboundFTPFileDto ftpFileDto = objectMapper.readValue(content, InboundFTPFileDto.class);
             List<String> validationErrors = FileValidationService.getValidationErrors(ftpFileDto);
         
             if (!validationErrors.isEmpty()) {
-                OutBoundDeliveryBTPLogFileDto.FileLogEntryDto fileLogEntry = new OutBoundDeliveryBTPLogFileDto.FileLogEntryDto();
+                InBoundDeliveryBTPLogFileDto.FileLogEntryDto fileLogEntry = new InBoundDeliveryBTPLogFileDto.FileLogEntryDto();
                 fileLogEntry.setFileName(fileName);
                 fileLogEntry.setErrorMessages(validationErrors);
                 fileLogEntries.add(fileLogEntry);
                 continue;
             }
         
-            OutboundDeliveryCreationDto outboundDelivery = new OutboundDeliveryCreationDto();
-            // Populate the outboundDelivery object with data from ftpFileDto
-            outboundDelivery.setSalesOrderID(ftpFileDto.getReference());
-            outboundDelivery.setShipFromSite(ftpFileDto.getShipFromSite());
-            outboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
-            outboundDelivery.setTrackingNumber(ftpFileDto.getTrackingNumbers());
-            outboundDelivery.setInternalComment(ftpFileDto.getInternalComment());
-            outboundDelivery.setFileName(fileName);
+            InboundDeliveryCreationDto inboundDelivery = new InboundDeliveryCreationDto();
+            inboundDelivery.setUniquRequestID(ftpFileDto.getID());
+            inboundDelivery.setFileName(fileName);
         
             // Process items and serial numbers
-            List<OutboundDeliveryCreationDto.OutboundDeliveryCreationItem> creationItems = 
+            List<InboundDeliveryCreationDto.InboundDeliveryCreationItem> creationItems = 
                 ftpFileDto.getItems().stream().map(item -> {
-                    OutboundDeliveryCreationDto.OutboundDeliveryCreationItem creationItem = 
-                        new OutboundDeliveryCreationDto.OutboundDeliveryCreationItem();
+                    InboundDeliveryCreationDto.InboundDeliveryCreationItem creationItem = 
+                        new InboundDeliveryCreationDto.InboundDeliveryCreationItem();
                     creationItem.setLineItem(item.getLineItem());
                     creationItem.setProductID(item.getProductID());
                     creationItem.setActualQuantity(item.getQuantity().toString());
                     creationItem.setIdentifiedStock(item.getLotCode());
         
-                    List<OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial> serials = 
+                    List<InboundDeliveryCreationDto.InboundDeliveryCreationSerial> serials = 
                         Optional.ofNullable(item.getSerialNumbers())
                             .orElseGet(Collections::emptyList)
                             .stream()
                             .map(serialNumberDto -> 
-                                new OutboundDeliveryCreationDto.OutboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
+                                new InboundDeliveryCreationDto.InboundDeliveryCreationSerial(serialNumberDto.getSerialNumber()))
                             .collect(Collectors.toList());
         
-                    creationItem.setOutboundDeliveryCreationSerials(serials);
+                    creationItem.setInboundDeliveryCreationSerials(serials);
                     return creationItem;
                 }).collect(Collectors.toList());
         
-            outboundDelivery.setOutboundDeliveryCreationItems(creationItems);
+            inboundDelivery.setInboundDeliveryCreationItems(creationItems);
         
-            String postBody = objectMapper.writeValueAsString(outboundDelivery);
+            String postBody = objectMapper.writeValueAsString(inboundDelivery);
             String byDResponse = byDODataService.sendPostRequestToByD(postDeliveryCreationURL, postBody, fileName);
             byDResponses.add(byDResponse);
         }
@@ -130,7 +126,7 @@ public class FileProcessingService implements FileProcessingInterface {
         return responseString;
     }
 
-    private String convertLogToFileToJson(OutBoundDeliveryBTPLogFileDto logFile) throws JsonProcessingException {
+    private String convertLogToFileToJson(InBoundDeliveryBTPLogFileDto logFile) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logFile);
     }
 
@@ -141,7 +137,7 @@ public class FileProcessingService implements FileProcessingInterface {
     }
 
     
-    public void finalizeFileProcessing(String fileName, OutBoundFileNamePostBYDDto.FileDestination destination) throws IOException {
+    public void finalizeFileProcessing(String fileName, InBoundFileNamePostBYDDto.FileDestination destination) throws IOException {
     String sourceFilePath = ERROR_DIRECTORY_PATH + "/" + fileName;
     String destinationFilePath;
 

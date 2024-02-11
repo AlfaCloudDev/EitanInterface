@@ -1,4 +1,4 @@
-package com.eitanmedical.app.bydimporter.common;
+package com.eitanmedical.app.bydimporter.common.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
