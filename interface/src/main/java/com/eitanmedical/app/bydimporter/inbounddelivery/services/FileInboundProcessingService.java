@@ -81,7 +81,7 @@ public class FileInboundProcessingService implements FileInboundProcessingInterf
             }
         
             InboundDeliveryCreationDto inboundDelivery = new InboundDeliveryCreationDto();
-            inboundDelivery.setUniquRequestID(ftpFileDto.getID());
+            inboundDelivery.setUniquRequestID(ftpFileDto.getUniqueRequestID());
             inboundDelivery.setSiteID(ftpFileDto.getSiteID());
             inboundDelivery.setFileName(fileName);
         

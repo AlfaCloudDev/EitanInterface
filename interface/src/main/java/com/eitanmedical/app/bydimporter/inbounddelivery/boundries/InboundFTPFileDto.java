@@ -4,8 +4,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class InboundFTPFileDto {
-    @JsonProperty("ID")
-    private String id;
+    @JsonProperty("UniqueRequestID")
+    private String uniqueRequestID;
 
     @JsonProperty("SiteID")
     private String siteID;
@@ -14,12 +14,12 @@ public class InboundFTPFileDto {
     private List<ItemData> items;
     
     //GETTERS SETTERS
-    public String getID() {
-        return id;
+    public String getUniqueRequestID() {
+        return uniqueRequestID;
     }
 
-    public void setID(String id) {
-        this.id = id;
+    public void setUniqueRequestID(String id) {
+        this.uniqueRequestID = id;
     }
 
     public String getSiteID() {
