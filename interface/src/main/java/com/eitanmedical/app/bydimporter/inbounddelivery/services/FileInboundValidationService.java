@@ -9,7 +9,7 @@ public class FileInboundValidationService {
     public static List<String> getValidationErrors(InboundFTPFileDto fileDto) {
         List<String> errors = new ArrayList<>();
 
-        if (fileDto.getID() == null || fileDto.getID().isEmpty()) {
+        if (fileDto.getUniqueRequestID() == null || fileDto.getUniqueRequestID().isEmpty()) {
             errors.add("Reference is missing in file");
         }
         if (fileDto.getItems() == null || fileDto.getItems().isEmpty()) {
